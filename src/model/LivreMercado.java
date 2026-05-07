@@ -24,12 +24,29 @@ public class LivreMercado {
     private final Autenticador_if autenticador;
     private final Categoria_if categoriaRaiz;
     
+    // Cliente atualmente autenticado na sessão
+    private Cliente clienteLogado;
 
     public LivreMercado() {
         initOrLoad();
     }
+
     public Autenticador_if getAutenticador() {
         return autenticador;
+    }
+
+    /**
+     * @return o cliente atualmente autenticado, ou null se nenhum
+     */
+    public Cliente getClienteLogado() {
+        return clienteLogado;
+    }
+
+    /**
+     * @param cliente o cliente que acabou de se autenticar
+     */
+    public void setClienteLogado(Cliente cliente) {
+        this.clienteLogado = cliente;
     }
 
     private void initOrLoad() {
@@ -47,14 +64,8 @@ public class LivreMercado {
         games.addProduto(new Produto("GTA", "SO MUCH FUN", 100));
         games.addProduto(new Produto("RDR2", "SO MUCH COWBOYS", 1000));
 
-        
-        //g1.addCategoria(new Categoria("Games"));
-        
-        
         g2 = new Categoria("Celulares e Telefones");
         g1.addCategoria(g2);
-//        g2.addCategoria(new Categoria("Peccas para Celular"));
-                
 
         Categoria pecasCelular = new Categoria("Peças para Celular");
         Produto randP = new Produto("Carregador", "Carrega Iphone", 50);
@@ -63,12 +74,10 @@ public class LivreMercado {
         pecasCelular.addProduto(randP);
         pecasCelular.addProduto(randP2);
         g2.addCategoria(pecasCelular);
-        
-   
     }
     
     /**
-     * @return the categoriaRai
+     * @return the categoriaRaiz
      */
     public Categoria_if getCategoriaRaiz() {
         return categoriaRaiz;
@@ -78,6 +87,4 @@ public class LivreMercado {
         categoriaRaiz = new Categoria("Geral");
         autenticador = Fabrica.new_Autenticador();
     }
-
-
 }

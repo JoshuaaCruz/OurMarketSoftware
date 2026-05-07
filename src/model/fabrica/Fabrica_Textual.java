@@ -10,18 +10,23 @@ import model.autenticador.Autenticador_if;
 import model.autenticador.Credencial_if;
 import model.cliente.Cliente_if;
 import view.Autenticador_View;
+import view.Categoria_Menu_View_if;
 import view.Cliente_View;
-import view.LivreMercado_View;
-import view.terminal.Autenticador_View_Textual;
 import view.Credencial_View;
+import view.LivreMercado_View;
+import view.Produtos_Menu_View_if;
+import view.terminal.Autenticador_View_Textual;
+import view.terminal.Categoria_Menu_View_Textual;
 import view.terminal.CredencialLoginSenha_View_Textual;
 import view.terminal.LivreMercado_View_Textual;
+import view.terminal.Produtos_Menu_View_Textual;
 
 /**
  *
  * @author joshua.cruz
  */
 public class Fabrica_Textual extends Fabrica {
+
     @Override
     public Autenticador_View new_Autenticador_View(Autenticador_if model) {
         return new Autenticador_View_Textual(model);
@@ -39,8 +44,17 @@ public class Fabrica_Textual extends Fabrica {
 
     @Override
     public Cliente_View buildClientView(Cliente_if model) {
-//AINDA NÃO IMPLEMENTADO
-return null;
+        // AINDA NÃO IMPLEMENTADO
+        return null;
     }
 
+    @Override
+    public Categoria_Menu_View_if new_Categoria_Menu_View(LivreMercado model) {
+        return new Categoria_Menu_View_Textual(model);
+    }
+
+    @Override
+    public Produtos_Menu_View_if new_Produtos_Menu_View(LivreMercado model) {
+        return new Produtos_Menu_View_Textual(model);
+    }
 }

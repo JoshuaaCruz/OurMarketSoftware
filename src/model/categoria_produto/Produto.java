@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model.categoria_produto;
 
 import model.cliente.Cliente;
@@ -65,5 +61,20 @@ public class Produto {
      */
     public void setCategoria(Categoria categoria) {
         this.categoria = categoria;
+    }
+
+
+    public void setNome(String novoNome) {
+        this.nome = novoNome;
+    }
+
+
+    public void setDescricao(String novaDescricao) {
+        this.descricao = novaDescricao;  
+    }
+
+
+    public void setPrecoBase(double novoPrecoBase) {
+        this.precoBase = novoPrecoBase;
     }
 }
