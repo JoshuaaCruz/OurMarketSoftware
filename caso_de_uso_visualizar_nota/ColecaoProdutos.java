@@ -1,9 +1,8 @@
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class ColecaoProdutos {
-    private List<Produto> produtos; // Supondo que você tenha uma classe Produto
+    private List<Produto> produtos;
 
     public ColecaoProdutos() {
         this.produtos = new ArrayList<>();
@@ -19,7 +18,7 @@ public class ColecaoProdutos {
         this.produtos.remove(produto);
     }
 
-    // Método para obter os produtos (CUIDADO: pode retornar a referência!)
+    // Método para obter os produtos (ver se não retorna referência direta para evitar mutabilidade externa)
     public List<Produto> getProdutos() {
         return produtos;
     }

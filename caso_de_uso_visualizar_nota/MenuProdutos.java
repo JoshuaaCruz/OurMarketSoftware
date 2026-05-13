@@ -82,7 +82,7 @@ public class MenuProdutos {
             System.out.println("2. Ver Produtos");
             System.out.println("3. Atualizar Produto");
             System.out.println("4. Remover Produto");
-            System.out.println("5. Ver Nota do Produto");
+            System.out.println("5. Ver Nota do Produto e Vendedor");
             System.out.println("0. Voltar");
             System.out.print("Escolha uma operação: ");
 
@@ -107,7 +107,7 @@ public class MenuProdutos {
                     break;
 
                 case 5:
-                    verNotaProduto();
+                    verNotaProdutoVendedor();
                     break;
 
                 case 0:
@@ -334,8 +334,8 @@ public class MenuProdutos {
 
     }
 
-    private void verNotaProduto() {
-        System.out.println("\n--- VER NOTA DO PRODUTO ---");
+    private void verNotaProdutoVendedor() {
+        System.out.println("\n--- VER NOTA DO PRODUTO E VENDEDOR ---");
 
         List<Produto> produtos = colecaoAtual.getProdutos();
 
@@ -369,21 +369,17 @@ public class MenuProdutos {
         System.out.println("Produto: " + produto.getNome());
         System.out.println("Nota: " + String.format("%.1f", produto.getNota()));
 
-        System.out.println("\nDeseja visualizar informações do Vendedor? (S/N)");
-        String resposta = scanner.nextLine().toUpperCase();
 
-        if (resposta.equals("S")) {
 
-            Cliente vendedor = produto.getVendedor();
-            System.out.println("\n--- INFORMAÇÕES DO VENDEDOR ---");
-            System.out.println("Nome: " + vendedor.getName());
-            System.out.println("CPF: " + vendedor.getCPF());
-            System.out.println("Nota do Vendedor: " + String.format("%.1f", vendedor.getNota()));
-            System.out.println("Quantidade de produtos vendidos: " + vendedor.getQuantidadeProdutosVendidos());
-        } else if (resposta.equals("N")) {
-            System.out.println("Voltando...");
-        } else {
-            System.out.println(" Opção inválida.");
+        Cliente vendedor = produto.getVendedor();
+        System.out.println("\n--- INFORMAÇÕES DO VENDEDOR ---");
+        System.out.println("Nome: " + vendedor.getName());
+        System.out.println("CPF: " + vendedor.getCPF());
+
+        if (vendedor.getQuantidadeProdutosVendidos() < 5){
+            System.out.println("Aviso: Vendedor tem poucos (<5) produtos vendidos. Nota pode ser instável.");            
         }
+        System.out.println("Nota do Vendedor: " + String.format("%.1f", vendedor.getNota()));
+        System.out.println("Quantidade de produtos vendidos: " + vendedor.getQuantidadeProdutosVendidos());
     }
 }

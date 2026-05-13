@@ -1,6 +1,3 @@
-import java.util.List;
-
-
 public class Produto {
     private String nome;
     private String descricao;
@@ -9,8 +6,6 @@ public class Produto {
     private Categoria categoria;
 
     private double nota;
-    private List<String> comentarios;
-
     
     public Produto(String nome, String descricao, double precoBase){
         this.nome=nome;
@@ -84,17 +79,6 @@ public class Produto {
         this.nota = nota;
     }
 
-    public void setComentarios(List<String> comentarios) {
-        this.comentarios = comentarios;
-    }
-
-    public void addComentario(String comentario) {
-        this.comentarios.add(comentario);
-    }
-
-    /**
-     * @return the nota
-     */
     public double getNota() {
         return nota;
     }
