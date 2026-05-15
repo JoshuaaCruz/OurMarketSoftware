@@ -1,5 +1,5 @@
 package contaBancaria;
 
-public class FormaDePagamento {
-    
+public interface FormaDePagamento {
+    boolean pagar(ContaBancaria origem, ContaBancaria destino, double valor);
 }

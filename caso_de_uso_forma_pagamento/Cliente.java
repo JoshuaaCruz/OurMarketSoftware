@@ -1,9 +1,10 @@
+import contaBancaria.ContaBancaria;
 
 public class Cliente {
    private String nome;
    private String CPF;
    private Endereco endereco;
-   private contaBancaria contaCliente;
+   private ContaBancaria contaCliente;
    private ColecaoProdutos estoque, carrinho;
 
    public Cliente() {
@@ -19,28 +20,35 @@ public class Cliente {
       return this.CPF;
    }
 
-   public void setNome(String var1) {
-      this.nome = var1;
+   public void setNome(String nome) {
+      this.nome = nome;
    }
 
-   public void setCPF(String var1) {
-      this.CPF = var1;
+   public void setCPF(String CPF) {
+      this.CPF = CPF;
    }
 
    public Endereco getEndereco() {
       return this.endereco;
    }
 
-   public contaBancaria getContaCliente() {
+   public void setEndereco(Endereco endereco) {
+      this.endereco = endereco;
+   }
+
+   public ContaBancaria getContaCliente() {
       return this.contaCliente;
    }
 
-       public ColecaoProdutos getEstoque() {
-        return this.estoque;
-    }
+   public void setContaCliente(ContaBancaria contaCliente) {
+      this.contaCliente = contaCliente;
+   }
 
-    public ColecaoProdutos getCarrinho() {
-        return this.carrinho;
-    }
+   public ColecaoProdutos getEstoque() {
+      return this.estoque;
+   }
 
+   public ColecaoProdutos getCarrinho() {
+      return this.carrinho;
+   }
 }
