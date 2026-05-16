@@ -1,44 +1,52 @@
 import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.List;
 import contaBancaria.ContaBancaria;
 import contaBancaria.CartaoCredito;
 import contaBancaria.Pix;
 import contaBancaria.FormaDePagamento;
-import java.util.ArrayList;
-import java.util.List;
-
 
 public class main {
-    
+
+    static final int ROLE_CONSUMIDOR = 1;
+    static final int ROLE_VENDEDOR   = 2;
+
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        
         List<Cliente> listaClientes = new ArrayList<>();
 
-        Endereco end = null;
-        Cliente cli = null;
+        Cliente cli   = null;
         ContaBancaria conta = null;
+        int role      = 0;
 
         int opcao = -1;
 
         while (opcao != 0) {
+
             System.out.println("\n===========================");
             System.out.println("       MENU PRINCIPAL      ");
             if (cli != null) {
-                System.out.println("   Cliente Ativo: " + cli.getName());
+                String papel = (role == ROLE_CONSUMIDOR) ? "Consumidor" : "Vendedor";
+                System.out.println("   " + papel + ": " + cli.getName());
             }
             System.out.println("===========================");
+
             System.out.println("1.  Cadastrar Cliente e Conta");
-            System.out.println("2.  Ver dados do Cliente");
-            System.out.println("3.  Consultar Saldo");
-            System.out.println("4.  Depositar");
-            System.out.println("5.  Sacar");
-            System.out.println("6.  Gerenciar Produtos");
-            System.out.println("7.  Gerenciar Categorias");
-            System.out.println("8.  Pagar com Pix");
-            System.out.println("9.  Pagar com Cartão de Crédito");
-            System.out.println("10. Ver Fatura do Cartão");
-            System.out.println("11. Pagar Fatura do Cartão");
-            System.out.println("12. Trocar Cliente Ativo");
+            System.out.println("2.  Trocar usuário ativo");
+            System.out.println("3.  Ver dados do Cliente");
+            System.out.println("4.  Consultar Saldo");
+            System.out.println("5.  Depositar");
+            System.out.println("6.  Sacar");
+            System.out.println("7.  Gerenciar Forma de Pagamento"); 
+            System.out.println("8.  Ver / Pagar Fatura do Cartão");
+
+            if (role == ROLE_CONSUMIDOR) {
+                System.out.println("9. Comprar Produto(s)");        
+            }
+            if (role == ROLE_VENDEDOR) {
+                System.out.println("9. Gerenciar Estoque (Produtos)");
+            }
+
             System.out.println("0.  Sair");
             System.out.print("Escolha uma operação: ");
 
@@ -46,15 +54,27 @@ public class main {
             scanner.nextLine();
 
             switch (opcao) {
+
                 case 1:
-                    System.out.println("\n--- 1. DADOS DO CLIENTE ---");
+                    System.out.println("\n--- PAPEL ---");
+                    System.out.println("1. Consumidor");
+                    System.out.println("2. Vendedor");
+                    System.out.print("Escolha seu papel: ");
+                    role = scanner.nextInt();
+                    scanner.nextLine();
+                    if (role != ROLE_CONSUMIDOR && role != ROLE_VENDEDOR) {
+                        System.out.println("Papel inválido. Usando Consumidor.");
+                        role = ROLE_CONSUMIDOR;
+                    }
+
+                    System.out.println("\n--- DADOS DO USUÁRIO ---");
                     cli = new Cliente();
                     System.out.print("Nome completo: ");
                     cli.setNome(scanner.nextLine());
                     System.out.print("CPF: ");
                     cli.setCPF(scanner.nextLine());
-                    
-                    System.out.println("\n--- 2. ENDEREÇO ---");
+
+                    System.out.println("\n--- ENDEREÇO ---");
                     System.out.print("Estado (UF): ");
                     String uf = scanner.nextLine();
                     System.out.print("Cidade: ");
@@ -64,225 +84,148 @@ public class main {
                     System.out.print("Número: ");
                     int numero = scanner.nextInt();
                     scanner.nextLine();
-                    System.out.print("Complemento (Apto, Casa, etc): ");
+                    System.out.print("Complemento: ");
                     String comp = scanner.nextLine();
-                    end = new Endereco(uf, cidade, rua, numero, comp);
-                    cli.setEndereco(end); // vincula endereço ao cliente
+                    Endereco end = new Endereco(uf, cidade, rua, numero, comp);
+                    cli.setEndereco(end);
 
-                    System.out.println("\n--- 3. DADOS DA CONTA ---");
+                    System.out.println("\n--- DADOS DA CONTA ---");
                     conta = new ContaBancaria();
                     System.out.print("Número da conta: ");
                     conta.setNumero(scanner.nextLine());
-                    System.out.print("Defina o limite inicial do cartão de crédito: R$ ");
+                    System.out.print("Limite inicial do Cartão de Crédito: R$ ");
                     conta.setLimiteFatura(scanner.nextDouble());
                     scanner.nextLine();
-                    cli.setContaCliente(conta); // vincula conta ao cliente
-                    
-                    listaClientes.add(cli); // Salva na lista do sistema
+                    cli.setContaCliente(conta);
+                    listaClientes.add(cli);
 
                     System.out.println("\n Cadastro realizado com sucesso!");
+                    System.out.println(" Formas de pagamento ativas: Pix e Cartão de Crédito.");
                     break;
-                    
+
                 case 2:
-                    if (cli == null) {
-                        System.out.println("\n Erro: Nenhum cliente cadastrado. Escolha a opção 1 primeiro.");
-                        break;
-                    }
-                    System.out.println("\n--- Dados do Cliente ---");
-                    System.out.println("Nome: " + cli.getName());
-                    System.out.println("CPF: " + cli.getCPF());
-                    if (cli.getEndereco() != null) {
-                        Endereco e = cli.getEndereco();
-                        System.out.println("Endereço: " + e.getLogradouro() + ", " + e.getNumero()
-                            + " " + e.getComplemento() + " - " + e.getCidade() + "/" + e.getEstado());
-                    }
-                    if (cli.getContaCliente() != null) {
-                        System.out.println("Conta nº: " + cli.getContaCliente().getNumero());
-                    }
-                    break;
-                    
-                case 3:
-                    if (conta == null) {
-                        System.out.println("\n Erro: Nenhuma conta cadastrada. Escolha a opção 1 primeiro.");
-                        break;
-                    }
-                    System.out.println("\n--- Saldo ---");
-                    System.out.println("Saldo atual: R$ " + conta.getSaldoConta());
-                    break;
-                    
-                case 4:
-                    if (conta == null) {
-                        System.out.println("\n Erro: Nenhuma conta cadastrada. Escolha a opção 1 primeiro.");
-                        break;
-                    }
-                    System.out.print("\nDigite o valor para depósito: R$ ");
-                    double valorDeposito = scanner.nextDouble();
-                    scanner.nextLine();
-                    conta.depositar(valorDeposito);
-                    System.out.println("Depósito de R$ " + valorDeposito + " realizado com sucesso!");
-                    break;
-                    
-                case 5:
-                    if (conta == null) {
-                        System.out.println("\n Erro: Nenhuma conta cadastrada. Escolha a opção 1 primeiro.");
-                        break;
-                    }
-                    System.out.print("\nDigite o valor para saque: R$ ");
-                    double valorSaque = scanner.nextDouble();
-                    scanner.nextLine();
-                    boolean sucessoSaque = conta.sacar(valorSaque);
-                    if (sucessoSaque) {
-                        System.out.println("Saque de R$ " + valorSaque + " realizado com sucesso!");
-                    } else {
-                        System.out.println("Saldo insuficiente para realizar o saque.");
-                    }
-                    break;
-                    
-                case 6:
-                    if (cli == null) {
-                        System.out.println("\n Erro: Nenhum cliente cadastrado. Escolha a opção 1 primeiro.");
-                        break;
-                    }
-                    MenuProdutos menuProdutos = new MenuProdutos(cli, scanner);
-                    menuProdutos.iniciar();
-                    break;
-
-                case 7:
-                    if (cli == null) {
-                        System.out.println("\n Erro: Nenhum cliente cadastrado. Escolha a opção 1 primeiro.");
-                        break;
-                    }
-                    MenuCategoria menuCategoria = new MenuCategoria(cli, scanner);
-                    menuCategoria.iniciar();
-                    break;
-
-                case 8:
-                    if (conta == null) {
-                        System.out.println("\n Erro: Nenhuma conta cadastrada. Escolha a opção 1 primeiro.");
-                        break;
-                    }
-                    System.out.print("\nNúmero da conta de destino: ");
-                    String numDestinoPix = scanner.nextLine();
-                    
-                    ContaBancaria destinoPix = null;
-                    for (Cliente c : listaClientes) {
-                        if (c.getContaCliente() != null && c.getContaCliente().getNumero().equals(numDestinoPix)) {
-                            destinoPix = c.getContaCliente();
-                            break;
-                        }
-                    }
-                    if (destinoPix == null) {
-                        System.out.println("Erro: Conta de destino não encontrada no sistema!");
-                        break;
-                    }
-                    
-                    System.out.print("Valor a transferir via Pix: R$ ");
-                    double valorPix = scanner.nextDouble();
-                    scanner.nextLine();
-                    FormaDePagamento pix = new Pix();
-                    boolean sucessoPix = pix.pagar(conta, destinoPix, valorPix);
-                    if (sucessoPix) {
-                        System.out.println("Pix de R$ " + valorPix + " realizado com sucesso!");
-                        System.out.println("Saldo atual: R$ " + conta.getSaldoConta());
-                    } else {
-                        System.out.println("Falha no Pix. Verifique o saldo (R$ " + conta.getSaldoConta() + ") e o valor informado.");
-                    }
-                    break;
-
-                case 9:
-                    if (conta == null) {
-                        System.out.println("\n Erro: Nenhuma conta cadastrada. Escolha a opção 1 primeiro.");
-                        break;
-                    }
-                    System.out.print("\nNúmero da conta de destino: ");
-                    String numDestinoCartao = scanner.nextLine();
-                    
-                    ContaBancaria destinoCartao = null;
-                    for (Cliente c : listaClientes) {
-                        if (c.getContaCliente() != null && c.getContaCliente().getNumero().equals(numDestinoCartao)) {
-                            destinoCartao = c.getContaCliente();
-                            break;
-                        }
-                    }
-                    if (destinoCartao == null) {
-                        System.out.println("Erro: Conta de destino não encontrada no sistema!");
-                        break;
-                    }
-                    
-                    System.out.print("Valor a pagar com Cartão de Crédito: R$ ");
-                    double valorCartao = scanner.nextDouble();
-                    scanner.nextLine();
-                    FormaDePagamento cartao = new CartaoCredito();
-                    boolean sucessoCartao = cartao.pagar(conta, destinoCartao, valorCartao);
-                    if (sucessoCartao) {
-                        System.out.println("Pagamento de R$ " + valorCartao + " no cartão realizado com sucesso!");
-                        System.out.println("Fatura atual: R$ " + conta.getFatura() + " / Limite: R$ " + conta.getLimiteFatura());
-                    } else {
-                        System.out.println("Falha no pagamento. Limite disponível: R$ " + (conta.getLimiteFatura() - conta.getFatura()));
-                    }
-                    break;
-
-                case 10:
-                    if (conta == null) {
-                        System.out.println("\n Erro: Nenhuma conta cadastrada. Escolha a opção 1 primeiro.");
-                        break;
-                    }
-                    System.out.println("\n--- Fatura do Cartão de Crédito ---");
-                    System.out.println("Fatura atual:      R$ " + conta.getFatura());
-                    System.out.println("Limite total:      R$ " + conta.getLimiteFatura());
-                    System.out.println("Limite disponível: R$ " + (conta.getLimiteFatura() - conta.getFatura()));
-                    break;
-
-                case 11:
-                    if (conta == null) {
-                        System.out.println("\n Erro: Nenhuma conta cadastrada. Escolha a opção 1 primeiro.");
-                        break;
-                    }
-                    System.out.println("Fatura atual: R$ " + conta.getFatura());
-                    System.out.print("Valor a pagar da fatura: R$ ");
-                    double valorFatura = scanner.nextDouble();
-                    scanner.nextLine();
-                    double faturaAntes = conta.getFatura();
-                    conta.pagarFatura(valorFatura);
-                    if (conta.getFatura() < faturaAntes) {
-                        System.out.println("Pagamento de R$ " + valorFatura + " na fatura realizado com sucesso!");
-                        System.out.println("Fatura restante: R$ " + conta.getFatura());
-                    } else {
-                        System.out.println("Falha: valor inválido ou maior que a fatura atual (R$ " + faturaAntes + ").");
-                    }
-                    break;
-
-                case 12:
                     if (listaClientes.isEmpty()) {
-                        System.out.println("\n Erro: Nenhum cliente cadastrado no sistema.");
+                        System.out.println("\n Nenhum cliente cadastrado.");
                         break;
                     }
-                    System.out.println("\n--- Selecionar Cliente Ativo ---");
+                    System.out.println("\n--- Selecionar Usuário Ativo ---");
                     for (int i = 0; i < listaClientes.size(); i++) {
-                        System.out.println((i + 1) + ". " + listaClientes.get(i).getName() + " (Conta: " + listaClientes.get(i).getContaCliente().getNumero() + ")");
+                        System.out.println("  " + (i + 1) + ". " + listaClientes.get(i).getName()
+                            + " (Conta: " + listaClientes.get(i).getContaCliente().getNumero() + ")");
                     }
-                    System.out.print("Escolha o número do cliente: ");
+                    System.out.print("Escolha: ");
                     int idx = scanner.nextInt() - 1;
                     scanner.nextLine();
                     if (idx >= 0 && idx < listaClientes.size()) {
-                        cli = listaClientes.get(idx);
+                        cli   = listaClientes.get(idx);
                         conta = cli.getContaCliente();
-                        System.out.println("Cliente ativo alterado com sucesso!");
+                        System.out.println("\n--- PAPEL ---");
+                        System.out.println("1. Consumidor");
+                        System.out.println("2. Vendedor");
+                        System.out.print("Escolha seu papel: ");
+                        role = scanner.nextInt();
+                        scanner.nextLine();
+                        System.out.println("Usuário ativo alterado para " + cli.getName() + ".");
                     } else {
                         System.out.println("Opção inválida.");
+                    }
+                    break;
+
+                case 3:
+                    if (cli == null) { System.out.println("\n Cadastre um cliente primeiro (opção 1)."); break; }
+                    System.out.println("\n--- Dados do Cliente ---");
+                    System.out.println("Nome: " + cli.getName());
+                    System.out.println("CPF:  " + cli.getCPF());
+                    if (cli.getEndereco() != null) {
+                        Endereco e = cli.getEndereco();
+                        System.out.println("End.: " + e.getLogradouro() + ", " + e.getNumero()
+                            + " " + e.getComplemento() + " - " + e.getCidade() + "/" + e.getEstado());
+                    }
+                    if (conta != null) System.out.println("Conta nº: " + conta.getNumero());
+                    break;
+
+                case 4:
+                    if (conta == null) { System.out.println("\n Cadastre uma conta primeiro (opção 1)."); break; }
+                    System.out.printf("%nSaldo atual: R$ %.2f%n", conta.getSaldoConta());
+                    break;
+
+                case 5:
+                    if (conta == null) { System.out.println("\n Cadastre uma conta primeiro (opção 1)."); break; }
+                    System.out.print("\nValor para depósito: R$ ");
+                    double dep = scanner.nextDouble();
+                    scanner.nextLine();
+                    conta.depositar(dep);
+                    System.out.printf("Depósito de R$ %.2f realizado! Saldo: R$ %.2f%n", dep, conta.getSaldoConta());
+                    break;
+
+                case 6:
+                    if (conta == null) { System.out.println("\n Cadastre uma conta primeiro (opção 1)."); break; }
+                    System.out.print("\nValor para saque: R$ ");
+                    double saq = scanner.nextDouble();
+                    scanner.nextLine();
+                    if (conta.sacar(saq)) {
+                        System.out.printf("Saque de R$ %.2f realizado! Saldo: R$ %.2f%n", saq, conta.getSaldoConta());
+                    } else {
+                        System.out.printf("Saldo insuficiente (R$ %.2f).%n", conta.getSaldoConta());
+                    }
+                    break;
+
+                case 7:
+                    if (conta == null) { System.out.println("\n Cadastre uma conta primeiro (opção 1)."); break; }
+                    new MenuFormaPagamento(conta, scanner).iniciar();
+                    break;
+
+                case 8:
+                    if (conta == null) { System.out.println("\n Cadastre uma conta primeiro (opção 1)."); break; }
+                    if (!conta.temFormaPagamento("Cartão de Crédito")) {
+                        System.out.println("\n Cartão de Crédito não está cadastrado. Acesse Gerenciar Forma de Pagamento.");
+                        break;
+                    }
+                    System.out.println("\n--- Fatura do Cartão de Crédito ---");
+                    System.out.printf("Fatura atual:      R$ %.2f%n", conta.getFatura());
+                    System.out.printf("Limite total:      R$ %.2f%n", conta.getLimiteFatura());
+                    System.out.printf("Limite disponível: R$ %.2f%n", conta.getLimiteFatura() - conta.getFatura());
+                    if (conta.getFatura() > 0) {
+                        System.out.print("\nDeseja pagar a fatura agora? (s/n): ");
+                        if (scanner.nextLine().trim().equalsIgnoreCase("s")) {
+                            System.out.print("Valor a pagar: R$ ");
+                            double vf = scanner.nextDouble();
+                            scanner.nextLine();
+                            double antes = conta.getFatura();
+                            conta.pagarFatura(vf);
+                            if (conta.getFatura() < antes) {
+                                System.out.printf("Pagamento de R$ %.2f realizado! Fatura restante: R$ %.2f%n", vf, conta.getFatura());
+                            } else {
+                                System.out.println("Valor inválido ou maior que a fatura.");
+                            }
+                        }
+                    }
+                    break;        
+
+                case 9:
+                    if (cli == null) { System.out.println("\n Cadastre um cliente primeiro (opção 1)."); break; }
+
+                    if (role == ROLE_CONSUMIDOR) {
+                        new MenuCompra(cli, listaClientes, scanner).iniciar();
+
+                    } else if (role == ROLE_VENDEDOR) {
+                        new MenuProdutos(cli, scanner).iniciar();
+
+                    } else {
+                        System.out.println("Selecione um papel primeiro (opção 1 ou 2).");
                     }
                     break;
 
                 case 0:
                     System.out.println("\nEncerrando o sistema...");
                     break;
-                    
+
                 default:
-                    System.out.println("\nOpção inválida! Por favor, escolha um número do menu.");
+                    System.out.println("\nOpção inválida.");
                     break;
             }
         }
-        
+
         scanner.close();
     }
 }
