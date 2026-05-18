@@ -10,11 +10,10 @@ import model.autenticador.Autenticador_if;
 import model.autenticador.Credencial_if;
 import model.cliente.Cliente_if;
 import view.Autenticador_View;
-import view.Categoria_Menu_View_if;
 import view.Cliente_View;
 import view.Credencial_View;
 import view.LivreMercado_View;
-import view.Produtos_Menu_View_if;
+import view.Menu_if;
 import view.terminal.Autenticador_View_Textual;
 import view.terminal.Categoria_Menu_View_Textual;
 import view.terminal.CredencialLoginSenha_View_Textual;
@@ -49,12 +48,14 @@ public class Fabrica_Textual extends Fabrica {
     }
 
     @Override
-    public Categoria_Menu_View_if new_Categoria_Menu_View(LivreMercado model) {
-        return new Categoria_Menu_View_Textual(model);
-    }
-
-    @Override
-    public Produtos_Menu_View_if new_Produtos_Menu_View(LivreMercado model) {
-        return new Produtos_Menu_View_Textual(model);
+    public Menu_if new_Menu_View(String menuType, LivreMercado model) {
+        switch (menuType.toLowerCase()) {
+            case "produtos":
+                return new Produtos_Menu_View_Textual(model);
+            case "categorias":
+                return new Categoria_Menu_View_Textual(model);
+            default:
+                throw new IllegalArgumentException("Unknown menu type: " + menuType);
+        }
     }
 }

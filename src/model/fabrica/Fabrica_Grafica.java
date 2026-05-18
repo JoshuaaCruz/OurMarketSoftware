@@ -11,11 +11,10 @@ import model.autenticador.Credencial_if;
 import model.cliente.Cliente;
 import model.cliente.Cliente_if;
 import view.Autenticador_View;
-import view.Categoria_Menu_View_if;
 import view.Cliente_View;
 import view.Credencial_View;
 import view.LivreMercado_View;
-import view.Produtos_Menu_View_if;
+import view.Menu_if;
 import view.gui.Autenticador_View_Grafico;
 import view.gui.CredencialLoginSenha_View_Grafico;
 import view.gui.LivreMercado_View_Grafico;
@@ -61,15 +60,8 @@ public class Fabrica_Grafica extends Fabrica {
     }
 
     @Override
-    public Categoria_Menu_View_if new_Categoria_Menu_View(LivreMercado model) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'new_Categoria_Menu_View'");
+    public Menu_if new_Menu_View(String menuType, LivreMercado model) {
+        // GUI menu implementations not yet available
+        throw new UnsupportedOperationException("GUI menus not yet implemented for menuType: " + menuType);
     }
-
-    @Override
-    public Produtos_Menu_View_if new_Produtos_Menu_View(LivreMercado model) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'new_Produtos_Menu_View'");
-    }
-
 }

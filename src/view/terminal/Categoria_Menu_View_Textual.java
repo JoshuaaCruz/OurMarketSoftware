@@ -4,12 +4,12 @@ import java.util.Scanner;
 import model.LivreMercado;
 import model.categoria_produto.Categoria;
 import model.categoria_produto.Categoria_if;
-import view.Categoria_Menu_View_if;
+import view.Menu_if;
 
 /**
  *
  */
-public class Categoria_Menu_View_Textual implements Categoria_Menu_View_if {
+public class Categoria_Menu_View_Textual implements Menu_if {
 
     private final LivreMercado model;
     private final Scanner scanner;

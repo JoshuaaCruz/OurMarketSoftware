@@ -5,10 +5,9 @@ import model.Fabrica;
 import model.LivreMercado;
 import model.autenticador.Autenticacao;
 import model.autenticador.Credencial_if;
-import view.Categoria_Menu_View_if;
 import view.Credencial_View;
 import view.LivreMercado_View;
-import view.Produtos_Menu_View_if;
+import view.Menu_if;
 
 /**
  *
@@ -73,14 +72,12 @@ public class LivreMercado_View_Textual implements LivreMercado_View {
                         System.out.println("\n Erro: Nenhum cliente autenticado.");
                         break;
                     }
-                    Produtos_Menu_View_if menuProdutos =
-                            Fabrica.GetViewFabricaConcreta().new_Produtos_Menu_View(model);
+                    Menu_if menuProdutos = Fabrica.GetViewFabricaConcreta().new_Menu_View("produtos", model);
                     menuProdutos.mostre();
                     break;
 
                 case 2:
-                    Categoria_Menu_View_if menuCategorias =
-                            Fabrica.GetViewFabricaConcreta().new_Categoria_Menu_View(model);
+                    Menu_if menuCategorias = Fabrica.GetViewFabricaConcreta().new_Menu_View("categorias", model);
                     menuCategorias.mostre();
                     break;
 

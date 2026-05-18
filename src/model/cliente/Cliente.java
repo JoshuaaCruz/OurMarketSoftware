@@ -16,6 +16,12 @@ public class Cliente implements Cliente_if{
     private Endereco endereco;
     private ContaBancaria contaCliente;
     private ColecaoProdutos estoque, carrinho;
+    private double nota;
+
+    public Cliente() {
+        this.estoque = new ColecaoProdutos();
+        this.carrinho = new ColecaoProdutos();
+    }
 
     @Override
     public String getName() {
@@ -47,11 +53,19 @@ public class Cliente implements Cliente_if{
         return endereco;
     }
 
+    public void setEndereco(Endereco endereco) {
+        this.endereco = endereco;
+    }
+
     /**
      * @return the ContaBancaria
      */
     public ContaBancaria getContaCliente() {
         return contaCliente;
+    }
+
+    public void setContaCliente(ContaBancaria contaCliente) {
+        this.contaCliente = contaCliente;
     }
 
     /**
@@ -67,5 +81,26 @@ public class Cliente implements Cliente_if{
     public ColecaoProdutos getCarrinho() {
         return carrinho;
     }
-    
+
+    public double getNota() {
+        calculaNotaColecao(this.estoque);
+        return nota;
+    }
+
+    public void calculaNotaColecao(ColecaoProdutos colecao) {
+        if (colecao == null || colecao.getProdutos().isEmpty()) {
+            this.nota = 0;
+            return;
+        }
+        double somaNotas = 0;
+        for (model.categoria_produto.Produto produto : colecao.getProdutos()) {
+            somaNotas += produto.getNota();
+        }
+        this.nota = somaNotas / colecao.getProdutos().size();
+    }
+
+    public int getQuantidadeProdutosVendidos() {
+        return estoque.getProdutos().size();
+    }
 }
+

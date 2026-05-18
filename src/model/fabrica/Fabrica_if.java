@@ -5,11 +5,10 @@ import model.autenticador.Autenticador_if;
 import model.autenticador.Credencial_if;
 import model.cliente.Cliente_if;
 import view.Autenticador_View;
-import view.Categoria_Menu_View_if;
 import view.Cliente_View;
 import view.Credencial_View;
 import view.LivreMercado_View;
-import view.Produtos_Menu_View_if;
+import view.Menu_if;
 
 /**
  *
@@ -22,7 +21,11 @@ public interface Fabrica_if {
     public Credencial_View new_Credencial_View(Credencial_if model);
     public Cliente_View buildClientView(Cliente_if model);
 
-    // Novos menus
-    public Categoria_Menu_View_if new_Categoria_Menu_View(LivreMercado model);
-    public Produtos_Menu_View_if new_Produtos_Menu_View(LivreMercado model);
+    /**
+     * Factory method for creating unified menu views
+     * @param menuType Type of menu: "produtos", "categorias"
+     * @param model The LivreMercado model
+     * @return Menu_if implementation for the specified menu type
+     */
+    public Menu_if new_Menu_View(String menuType, LivreMercado model);
 }

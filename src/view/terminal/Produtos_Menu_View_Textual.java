@@ -6,12 +6,12 @@ import model.LivreMercado;
 import model.categoria_produto.ColecaoProdutos;
 import model.categoria_produto.Produto;
 import model.cliente.Cliente;
-import view.Produtos_Menu_View_if;
+import view.Menu_if;
 
 /**
  *
  */
-public class Produtos_Menu_View_Textual implements Produtos_Menu_View_if {
+public class Produtos_Menu_View_Textual implements Menu_if {
 
     private final LivreMercado model;
     private final Scanner scanner;
@@ -75,6 +75,7 @@ public class Produtos_Menu_View_Textual implements Produtos_Menu_View_if {
             System.out.println("2. Ver Produtos");
             System.out.println("3. Atualizar Produto");
             System.out.println("4. Remover Produto");
+            System.out.println("5. Ver Nota do Produto e Vendedor");
             System.out.println("0. Voltar");
             System.out.print("Escolha uma operação: ");
 
@@ -93,6 +94,9 @@ public class Produtos_Menu_View_Textual implements Produtos_Menu_View_if {
                     break;
                 case 4:
                     removerProduto(colecao, nomeColecao);
+                    break;
+                case 5:
+                    verNotaProdutoVendedor(colecao);
                     break;
                 case 0:
                     System.out.println("\nVoltando ao menu anterior...");

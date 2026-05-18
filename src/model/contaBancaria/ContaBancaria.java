@@ -8,16 +8,23 @@ package model.contaBancaria;
  *
  * @author joshu
  */
+import java.util.ArrayList;
+import java.util.List;
+
 public class ContaBancaria {
 
     private String numeroConta;
     private double saldoConta;
     private double fatura;
     private double limiteFatura;
+    private List<String> formasPagamento;
 
-    
+    public ContaBancaria() {
+        this.formasPagamento = new ArrayList<>();
+        this.formasPagamento.add("Pix");
+        this.formasPagamento.add("Cartão de Crédito");
+    }
 
-    
     public String getNumero(){
         return numeroConta;
     }
@@ -64,8 +71,8 @@ public class ContaBancaria {
         if(saldoConta >= valor){
             saldoConta -= valor;
             return true;
-    }
-          return false;
+        }
+        return false;
     }
     
     public boolean trasferir(double valor, ContaBancaria contaDestino){
@@ -75,5 +82,34 @@ public class ContaBancaria {
         }
         return false;
     }
-    
+
+    public boolean transferir(double valor, ContaBancaria contaDestino) {
+        return trasferir(valor, contaDestino);
+    }
+
+    public List<String> getFormasPagamento() {
+        return formasPagamento;
+    }
+
+    public boolean adicionarFormaPagamento(String forma) {
+        if (forma != null && !forma.isBlank() && !formasPagamento.contains(forma)) {
+            formasPagamento.add(forma);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean removerFormaPagamento(String forma) {
+        return formasPagamento.remove(forma);
+    }
+
+    public boolean temFormaPagamento(String forma) {
+        return formasPagamento.contains(forma);
+    }
+
+    public void pagarFatura(double valor) {
+        if (valor > 0 && fatura >= valor) {
+            fatura -= valor;
+        }
+    }
 }

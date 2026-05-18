@@ -12,12 +12,13 @@ public class Produto {
     private double precoBase;
     private Cliente vendedor;
     private Categoria categoria;
+    private double nota;
 
-    
     public Produto(String nome, String descricao, double precoBase){
         this.nome=nome;
         this.descricao=descricao;
         this.precoBase=precoBase;
+        this.nota = 0;
     }
     
     
@@ -76,5 +77,13 @@ public class Produto {
 
     public void setPrecoBase(double novoPrecoBase) {
         this.precoBase = novoPrecoBase;
+    }
+
+    public void setNota(double nota) {
+        this.nota = nota;
+    }
+
+    public double getNota() {
+        return nota;
     }
 }

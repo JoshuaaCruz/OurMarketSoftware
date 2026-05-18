@@ -5,12 +5,18 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import model.autenticador.Autenticador_if;
 import model.categoria_produto.Categoria;
 import model.categoria_produto.Categoria_if;
+import model.categoria_produto.ColecaoProdutos;
 import model.categoria_produto.Produto;
 import model.cliente.Cliente;
+import model.contaBancaria.CartaoCredito;
 import model.contaBancaria.ContaBancaria;
+import model.contaBancaria.FormaDePagamento;
+import model.contaBancaria.Pix;
 
 /**
  *
@@ -18,7 +24,7 @@ import model.contaBancaria.ContaBancaria;
  */
 public class LivreMercado {
     
-    private ArrayList<Cliente> clientes;
+    private final List<Cliente> clientes;
     private ContaBancaria contaMercado;
     
     private final Autenticador_if autenticador;
@@ -83,8 +89,128 @@ public class LivreMercado {
         return categoriaRaiz;
     }
 
+    // ===== Service Methods for Product Management =====
+    
+    /**
+     * Gets the shopping cart (carrinho) of the currently logged-in client
+     * @return ColecaoProdutos representing the client's cart, or null if no client is logged in
+     */
+    public ColecaoProdutos getCarrinhoDoClienteLogado() {
+        if (clienteLogado == null) {
+            return null;
+        }
+        return clienteLogado.getCarrinho();
+    }
+
+    /**
+     * Gets the inventory (estoque) of the currently logged-in client
+     * @return ColecaoProdutos representing the client's inventory, or null if no client is logged in
+     */
+    public ColecaoProdutos getEstoqueDoClienteLogado() {
+        if (clienteLogado == null) {
+            return null;
+        }
+        return clienteLogado.getEstoque();
+    }
+
+    /**
+     * Adds a product to the cart of the currently logged-in client
+     * @param produto The product to add
+     * @throws IllegalStateException if no client is logged in
+     */
+    public void adicionarProdutoAoCarrinho(Produto produto) {
+        if (clienteLogado == null) {
+            throw new IllegalStateException("Nenhum cliente autenticado. Não é possível adicionar produto ao carrinho.");
+        }
+        clienteLogado.getCarrinho().adicionarProduto(produto);
+    }
+
+    /**
+     * Removes a product from the cart of the currently logged-in client
+     * @param produto The product to remove
+     * @throws IllegalStateException if no client is logged in
+     */
+    public void removerProdutoDoCarrinho(Produto produto) {
+        if (clienteLogado == null) {
+            throw new IllegalStateException("Nenhum cliente autenticado. Não é possível remover produto do carrinho.");
+        }
+        clienteLogado.getCarrinho().removerProduto(produto);
+    }
+
+    /**
+     * Adds a product to the inventory (estoque) of the currently logged-in client
+     * @param produto The product to add
+     * @throws IllegalStateException if no client is logged in
+     */
+    public void adicionarProdutoAoEstoque(Produto produto) {
+        if (clienteLogado == null) {
+            throw new IllegalStateException("Nenhum cliente autenticado. Não é possível adicionar produto ao estoque.");
+        }
+        clienteLogado.getEstoque().adicionarProduto(produto);
+    }
+
+    /**
+     * Removes a product from the inventory (estoque) of the currently logged-in client
+     * @param produto The product to remove
+     * @throws IllegalStateException if no client is logged in
+     */
+    public void removerProdutoDoEstoque(Produto produto) {
+        if (clienteLogado == null) {
+            throw new IllegalStateException("Nenhum cliente autenticado. Não é possível remover produto do estoque.");
+        }
+        clienteLogado.getEstoque().removerProduto(produto);
+    }
+
+    /**
+     * Returns all registered clients.
+     */
+    public List<Cliente> getClientes() {
+        return Collections.unmodifiableList(clientes);
+    }
+
+    /**
+     * Registers a new client in the marketplace.
+     */
+    public void adicionarCliente(Cliente cliente) {
+        if (cliente != null) {
+            clientes.add(cliente);
+        }
+    }
+
+    /**
+     * Processes a purchase from comprador to vendedor using the specified payment method.
+     */
+    public boolean processarCompra(Cliente comprador, Cliente vendedor, double valor, String formaPagamento) {
+        if (comprador == null || vendedor == null || valor <= 0 || formaPagamento == null) {
+            return false;
+        }
+        ContaBancaria origem = comprador.getContaCliente();
+        ContaBancaria destino = vendedor.getContaCliente();
+        if (origem == null || destino == null) {
+            return false;
+        }
+
+        FormaDePagamento forma;
+        switch (formaPagamento.toLowerCase()) {
+            case "pix":
+                forma = new Pix();
+                break;
+            case "cartão de crédito":
+            case "cartao de crédito":
+            case "cartao de credito":
+            case "cartão de credito":
+                forma = new CartaoCredito();
+                break;
+            default:
+                return false;
+        }
+
+        return forma.pagar(origem, destino, valor);
+    }
+
     {
         categoriaRaiz = new Categoria("Geral");
         autenticador = Fabrica.new_Autenticador();
+        clientes = new ArrayList<>();
     }
 }
