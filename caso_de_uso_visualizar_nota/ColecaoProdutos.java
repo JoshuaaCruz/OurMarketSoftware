@@ -27,8 +27,6 @@ public class ColecaoProdutos {
     public ColecaoProdutos copiar() {
         ColecaoProdutos novaColecao = new ColecaoProdutos();
         for (Produto p : this.produtos) {
-            // Se Produto for imutável, pode copiar a referência.
-            // Se Produto for mutável, você precisaria de um p.copiar() aqui também.
             novaColecao.adicionarProduto(p); // Adiciona o produto à nova coleção
         }
         return novaColecao;
