@@ -15,8 +15,12 @@ public class Categoria_Menu_View_Textual implements Menu_if {
     private final Scanner scanner;
 
     public Categoria_Menu_View_Textual(LivreMercado model) {
+        this(model, new Scanner(System.in));
+    }
+
+    public Categoria_Menu_View_Textual(LivreMercado model, Scanner scanner) {
         this.model = model;
-        this.scanner = new Scanner(System.in);
+        this.scanner = scanner;
     }
 
     @Override

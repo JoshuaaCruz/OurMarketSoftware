@@ -50,6 +50,10 @@ public class Produto {
         return vendedor;
     }
 
+    public void setVendedor(Cliente vendedor) {
+        this.vendedor = vendedor;
+    }
+
     /**
      * @return the categoria
      */

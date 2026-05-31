@@ -15,19 +15,34 @@ public class Produtos_Menu_View_Textual implements Menu_if {
 
     private final LivreMercado model;
     private final Scanner scanner;
+    private final Cliente clienteFicticio;
 
     public Produtos_Menu_View_Textual(LivreMercado model) {
+        this(model, new Scanner(System.in));
+    }
+
+    public Produtos_Menu_View_Textual(LivreMercado model, Scanner scanner) {
         this.model = model;
-        this.scanner = new Scanner(System.in);
+        this.scanner = scanner;
+        this.clienteFicticio = criarClienteFicticio();
+    }
+
+    private Cliente criarClienteFicticio() {
+        Cliente ficticio = new Cliente();
+        ficticio.setNome("Loja Padrão");
+        ficticio.setCPF("00000000000");
+        ficticio.calculaNotaColecao(ficticio.getEstoque());
+        return ficticio;
     }
 
     @Override
     public void mostre() {
         Cliente cliente = model.getClienteLogado();
         if (cliente == null) {
-            System.out.println("\n Erro: Nenhum cliente autenticado.");
+            System.out.println("\n Erro: Nenhum cliente fornecido.");
             return;
         }
+
         escolherColecao(cliente);
     }
 
@@ -58,7 +73,6 @@ public class Produtos_Menu_View_Textual implements Menu_if {
                     break;
                 default:
                     System.out.println("\nOpção inválida! Por favor, escolha 1, 2 ou 0.");
-                    opcao = -1;
                     break;
             }
         }
@@ -102,7 +116,7 @@ public class Produtos_Menu_View_Textual implements Menu_if {
                     System.out.println("\nVoltando ao menu anterior...");
                     break;
                 default:
-                    System.out.println("\nOpção inválida!");
+                    System.out.println("\nOpção inválida! Por favor, escolha um número do menu.");
                     break;
             }
         }
@@ -121,7 +135,29 @@ public class Produtos_Menu_View_Textual implements Menu_if {
         double preco = scanner.nextDouble();
         scanner.nextLine();
 
-        colecao.adicionarProduto(new Produto(nome, descricao, preco));
+        System.out.print("Nota do produto (0-5): ");
+        double nota = scanner.nextDouble();
+        scanner.nextLine();
+
+        Produto novoProduto = new Produto(nome, descricao, preco);
+        novoProduto.setNota(nota);
+
+        Cliente vendedorEscolhido;
+        if (colecao == model.getClienteLogado().getEstoque()) {
+            vendedorEscolhido = model.getClienteLogado();
+            System.out.println("\nProduto será vinculado ao seu perfil de vendedor.");
+        } else {
+            vendedorEscolhido = clienteFicticio;
+            System.out.println("\nProduto será vinculado à Loja Padrão.");
+        }
+
+        novoProduto.setVendedor(vendedorEscolhido);
+        vendedorEscolhido.getEstoque().adicionarProduto(novoProduto);
+
+        if (colecao == model.getClienteLogado().getCarrinho()) {
+            colecao.adicionarProduto(novoProduto);
+        }
+
         System.out.println("\n Produto '" + nome + "' adicionado ao " + nomeColecao + " com sucesso!");
     }
 
@@ -130,12 +166,13 @@ public class Produtos_Menu_View_Textual implements Menu_if {
 
         List<Produto> produtos = colecao.getProdutos();
         if (produtos.isEmpty()) {
-            System.out.println(" Nenhum produto encontrado.");
+            System.out.println(" Nenhum produto encontrado no " + nomeColecao + ".");
             return;
         }
 
-        System.out.println("\nTotal: " + produtos.size());
-        System.out.println("─────────────────────────────────────");
+        System.out.println("\nTotal de produtos: " + produtos.size());
+        System.out.println("-------------------------------------------------");
+
         for (int i = 0; i < produtos.size(); i++) {
             Produto p = produtos.get(i);
             System.out.println("\n[" + (i + 1) + "] " + p.getNome());
@@ -144,8 +181,13 @@ public class Produtos_Menu_View_Textual implements Menu_if {
             if (p.getCategoria() != null) {
                 System.out.println("    Categoria: " + p.getCategoria().getNome());
             }
+            if (p.getVendedor() != null) {
+                System.out.println("    Vendedor: " + p.getVendedor().getName());
+            }
+            System.out.println("    Nota: " + String.format("%.2f", p.getNota()));
         }
-        System.out.println("─────────────────────────────────────");
+
+        System.out.println("-------------------------------------------------");
     }
 
     private void atualizarProduto(ColecaoProdutos colecao) {
@@ -157,46 +199,71 @@ public class Produtos_Menu_View_Textual implements Menu_if {
             return;
         }
 
+        System.out.println("\nProdutos disponíveis:");
         for (int i = 0; i < produtos.size(); i++) {
             System.out.println((i + 1) + ". " + produtos.get(i).getNome());
         }
 
-        System.out.print("\nEscolha o número do produto (0 para cancelar): ");
+        System.out.print("\nEscolha o número do produto a atualizar (0 para cancelar): ");
         int escolha = scanner.nextInt();
         scanner.nextLine();
 
-        if (escolha == 0) { System.out.println("Cancelado."); return; }
-        if (escolha < 1 || escolha > produtos.size()) { System.out.println(" Número inválido."); return; }
+        if (escolha == 0) {
+            System.out.println("Operação cancelada.");
+            return;
+        }
+
+        if (escolha < 1 || escolha > produtos.size()) {
+            System.out.println(" Erro: Número inválido.");
+            return;
+        }
 
         Produto produto = produtos.get(escolha - 1);
 
-        System.out.println("\n1. Nome  2. Descrição  3. Preço  0. Cancelar");
+        System.out.println("\nO que deseja atualizar?");
+        System.out.println("1. Nome");
+        System.out.println("2. Descrição");
+        System.out.println("3. Preço");
+        System.out.println("4. Nota");
+        System.out.println("0. Cancelar");
         System.out.print("Escolha: ");
+
         int opcao = scanner.nextInt();
         scanner.nextLine();
 
         switch (opcao) {
             case 1:
                 System.out.print("Novo nome: ");
-                produto.setNome(scanner.nextLine());
-                System.out.println(" Nome atualizado!");
+                String novoNome = scanner.nextLine();
+                produto.setNome(novoNome);
+                System.out.println(" Nome atualizado com sucesso!");
                 break;
             case 2:
                 System.out.print("Nova descrição: ");
-                produto.setDescricao(scanner.nextLine());
-                System.out.println(" Descrição atualizada!");
+                String novaDesc = scanner.nextLine();
+                produto.setDescricao(novaDesc);
+                System.out.println(" Descrição atualizada com sucesso!");
                 break;
             case 3:
                 System.out.print("Novo preço: R$ ");
-                produto.setPrecoBase(scanner.nextDouble());
+                double novoPreco = scanner.nextDouble();
                 scanner.nextLine();
-                System.out.println(" Preço atualizado!");
+                produto.setPrecoBase(novoPreco);
+                System.out.println(" Preço atualizado com sucesso!");
+                break;
+            case 4:
+                System.out.print("Nova nota (0-5): ");
+                double novaNota = scanner.nextDouble();
+                scanner.nextLine();
+                produto.setNota(novaNota);
+                System.out.println(" Nota atualizada com sucesso!");
                 break;
             case 0:
-                System.out.println("Cancelado.");
+                System.out.println("Operação cancelada.");
                 break;
             default:
                 System.out.println(" Opção inválida.");
+                break;
         }
     }
 
@@ -205,10 +272,65 @@ public class Produtos_Menu_View_Textual implements Menu_if {
 
         List<Produto> produtos = colecao.getProdutos();
         if (produtos.isEmpty()) {
+            System.out.println(" Nenhum produto disponível para remover.");
+            return;
+        }
+
+        System.out.println("\nProdutos disponíveis:");
+        for (int i = 0; i < produtos.size(); i++) {
+            System.out.println((i + 1) + ". " + produtos.get(i).getNome());
+        }
+
+        System.out.print("\nEscolha o número do produto a remover (0 para cancelar): ");
+        int escolha = scanner.nextInt();
+        scanner.nextLine();
+
+        if (escolha == 0) {
+            System.out.println("Operação cancelada.");
+            return;
+        }
+
+        if (escolha < 1 || escolha > produtos.size()) {
+            System.out.println(" Erro: Número inválido.");
+            return;
+        }
+
+        Produto produto = produtos.get(escolha - 1);
+        String nomeProduto = produto.getNome();
+
+        colecao.removerProduto(produto);
+
+        System.out.println("\n Produto '" + nomeProduto + "' removido do " + nomeColecao + " com sucesso!");
+
+        if (colecao == model.getClienteLogado().getCarrinho()) {
+            System.out.println("Deseja apagar o produto do sistema (retirar do estoque do vendedor)? (S/N)");
+            String resposta = scanner.nextLine().trim().toUpperCase();
+
+            if (resposta.equals("S")) {
+                Cliente vendedor = produto.getVendedor();
+
+                if (vendedor != null) {
+                    vendedor.getEstoque().removerProduto(produto);
+                    System.out.println(" Produto completamente apagado do sistema (removido do estoque do vendedor '" + vendedor.getName() + "').");
+                } else {
+                    System.out.println(" Aviso: Não foi possível apagar do sistema pois o produto não possui um vendedor associado.");
+                }
+            } else {
+                System.out.println(" O produto foi removido apenas do seu Carrinho.");
+            }
+        }
+    }
+
+    private void verNotaProdutoVendedor(ColecaoProdutos colecao) {
+        System.out.println("\n--- VER NOTA DO PRODUTO E VENDEDOR ---");
+
+        List<Produto> produtos = colecao.getProdutos();
+        if (produtos.isEmpty()) {
             System.out.println(" Nenhum produto disponível.");
             return;
         }
 
+        System.out.println("\nProdutos disponíveis:");
         for (int i = 0; i < produtos.size(); i++) {
             System.out.println((i + 1) + ". " + produtos.get(i).getNome());
         }
@@ -217,12 +339,36 @@ public class Produtos_Menu_View_Textual implements Menu_if {
         int escolha = scanner.nextInt();
         scanner.nextLine();
 
-        if (escolha == 0) { System.out.println("Cancelado."); return; }
-        if (escolha < 1 || escolha > produtos.size()) { System.out.println(" Número inválido."); return; }
+        if (escolha == 0) {
+            System.out.println("Operação cancelada.");
+            return;
+        }
+
+        if (escolha < 1 || escolha > produtos.size()) {
+            System.out.println(" Erro: Número inválido.");
+            return;
+        }
 
         Produto produto = produtos.get(escolha - 1);
-        String nome = produto.getNome();
-        colecao.removerProduto(produto);
-        System.out.println("\n Produto '" + nome + "' removido do " + nomeColecao + " com sucesso!");
+
+        System.out.println("\n--- NOTA DO PRODUTO ---");
+        System.out.println("Produto: " + produto.getNome());
+        System.out.println("Nota: " + String.format("%.1f", produto.getNota()));
+
+        Cliente vendedor = produto.getVendedor();
+        if (vendedor == null) {
+            System.out.println("\nProduto não possui vendedor associado.");
+            return;
+        }
+
+        System.out.println("\n--- INFORMAÇÕES DO VENDEDOR ---");
+        System.out.println("Nome: " + vendedor.getName());
+        System.out.println("CPF: " + vendedor.getCPF());
+
+        if (vendedor.getQuantidadeProdutosVendidos() < 5) {
+            System.out.println("Aviso: Vendedor tem poucos (<5) produtos vendidos. Nota pode ser instável.");
+        }
+        System.out.println("Nota do Vendedor: " + String.format("%.1f", vendedor.getNota()));
+        System.out.println("Quantidade de produtos vendidos: " + vendedor.getQuantidadeProdutosVendidos());
     }
 }
