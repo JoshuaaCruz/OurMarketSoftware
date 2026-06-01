@@ -4,28 +4,21 @@
  */
 package model.contaBancaria;
 
-/**
- *
- * @author joshu
- */
 public class CartaoCredito implements FormaDePagamento {
 
     @Override
     public boolean pagar(ContaBancaria origem, ContaBancaria destino, double valor) {
-        // aumenta valor à fatura do cliente (não saca da conta direta dele), transfere valor para o destino e pronto
-        //vamos precisar de outra variavel na conta bancaria
-        
-        
-        //aqui podemos tirar a verificação
-        if(origem.getFatura() > origem.getLimiteFatura()){
+        if (origem == null || destino == null || valor <= 0) {
             return false;
-        } else{
-        
+        }
+
+        if (origem.getFatura() + valor > origem.getLimiteFatura()) {
+            return false;
+        }
+
         origem.incrementaFatura(valor);
         destino.depositar(valor);
         return true;
-        }
-        
     }
-    
+
 }

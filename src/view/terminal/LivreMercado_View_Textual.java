@@ -39,8 +39,10 @@ public class LivreMercado_View_Textual implements LivreMercado_View {
             System.out.println("3. Consultar Saldo");
             System.out.println("4. Depositar");
             System.out.println("5. Sacar");
-            System.out.println("6. Gerenciar Produtos");
-            System.out.println("7. Gerenciar Categorias");
+            System.out.println("6. Gerenciar Forma de Pagamento");
+            System.out.println("7. Ver / Pagar Fatura do Cartão");
+            System.out.println("8. Gerenciar Produtos");
+            System.out.println("9. Gerenciar Categorias");
             System.out.println("0. Sair");
             System.out.print("Escolha uma operação: ");
 
@@ -64,9 +66,15 @@ public class LivreMercado_View_Textual implements LivreMercado_View {
                     sacar();
                     break;
                 case 6:
-                    gerenciarProdutos();
+                    gerenciarFormaPagamento();
                     break;
                 case 7:
+                    verPagarFaturaCartao();
+                    break;
+                case 8:
+                    gerenciarProdutos();
+                    break;
+                case 9:
                     gerenciarCategorias();
                     break;
                 case 0:
@@ -103,6 +111,8 @@ public class LivreMercado_View_Textual implements LivreMercado_View {
 
         System.out.println("\n--- 3. DADOS DA CONTA ---");
         ContaBancaria conta = new ContaBancaria();
+        System.out.print("Número da conta: ");
+        conta.setNumero(scanner.nextLine());
         System.out.print("Defina o limite inicial do cartão de crédito: R$ ");
         conta.setLimiteFatura(scanner.nextDouble());
         scanner.nextLine();
@@ -123,6 +133,14 @@ public class LivreMercado_View_Textual implements LivreMercado_View {
         System.out.println("\n--- Dados do Cliente ---");
         System.out.println("Cliente: " + cliente.getName());
         System.out.println("CPF: " + cliente.getCPF());
+        if (cliente.getEndereco() != null) {
+            Endereco endereco = cliente.getEndereco();
+            System.out.println("Endereço: " + endereco.getLogradouro() + ", " + endereco.getNumero()
+                + " " + endereco.getComplemento() + " - " + endereco.getCidade() + "/" + endereco.getEstado());
+        }
+        if (cliente.getContaCliente() != null) {
+            System.out.println("Conta nº: " + cliente.getContaCliente().getNumero());
+        }
     }
 
     private void consultarSaldo() {
@@ -162,6 +180,54 @@ public class LivreMercado_View_Textual implements LivreMercado_View {
             System.out.println("Saque de R$ " + valorSaque + " realizado com sucesso!");
         } else {
             System.out.println("Saldo insuficiente para realizar o saque.");
+        }
+    }
+
+    private void gerenciarFormaPagamento() {
+        ContaBancaria conta = getContaCadastrada();
+        if (conta == null) {
+            return;
+        }
+
+        Menu_if menuFormaPagamento = new MenuFormaPagamento_View_Textual(conta, scanner);
+        menuFormaPagamento.mostre();
+    }
+
+    private void verPagarFaturaCartao() {
+        ContaBancaria conta = getContaCadastrada();
+        if (conta == null) {
+            return;
+        }
+
+        if (!conta.temFormaPagamento("Cartão de Crédito")) {
+            System.out.println("\n Cartão de Crédito não está cadastrado. Acesse Gerenciar Forma de Pagamento.");
+            return;
+        }
+
+        System.out.println("\n--- Fatura do Cartão de Crédito ---");
+        System.out.printf("Fatura atual:      R$ %.2f%n", conta.getFatura());
+        System.out.printf("Limite total:      R$ %.2f%n", conta.getLimiteFatura());
+        System.out.printf("Limite disponível: R$ %.2f%n", conta.getLimiteFatura() - conta.getFatura());
+
+        if (conta.getFatura() <= 0) {
+            return;
+        }
+
+        System.out.print("\nDeseja pagar a fatura agora? (s/n): ");
+        if (!scanner.nextLine().trim().equalsIgnoreCase("s")) {
+            return;
+        }
+
+        System.out.print("Valor a pagar: R$ ");
+        double valor = scanner.nextDouble();
+        scanner.nextLine();
+
+        double faturaAntes = conta.getFatura();
+        conta.pagarFatura(valor);
+        if (conta.getFatura() < faturaAntes) {
+            System.out.printf("Pagamento de R$ %.2f realizado! Fatura restante: R$ %.2f%n", valor, conta.getFatura());
+        } else {
+            System.out.println("Valor inválido ou maior que a fatura.");
         }
     }
 

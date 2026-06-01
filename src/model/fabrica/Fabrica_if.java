@@ -23,7 +23,7 @@ public interface Fabrica_if {
 
     /**
      * Factory method for creating unified menu views
-     * @param menuType Type of menu: "produtos", "categorias"
+     * @param menuType Type of menu: "produtos", "categorias", "forma_pagamento"
      * @param model The LivreMercado model
      * @return Menu_if implementation for the specified menu type
      */

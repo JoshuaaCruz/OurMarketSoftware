@@ -18,12 +18,9 @@ import view.terminal.Autenticador_View_Textual;
 import view.terminal.Categoria_Menu_View_Textual;
 import view.terminal.CredencialLoginSenha_View_Textual;
 import view.terminal.LivreMercado_View_Textual;
+import view.terminal.MenuFormaPagamento_View_Textual;
 import view.terminal.Produtos_Menu_View_Textual;
 
-/**
- *
- * @author joshua.cruz
- */
 public class Fabrica_Textual extends Fabrica {
 
     @Override
@@ -54,6 +51,12 @@ public class Fabrica_Textual extends Fabrica {
                 return new Produtos_Menu_View_Textual(model);
             case "categorias":
                 return new Categoria_Menu_View_Textual(model);
+            case "forma_pagamento":
+            case "forma pagamento":
+                if (model.getClienteLogado() == null || model.getClienteLogado().getContaCliente() == null) {
+                    throw new IllegalStateException("Nenhum cliente com conta cadastrado.");
+                }
+                return new MenuFormaPagamento_View_Textual(model.getClienteLogado().getContaCliente(), new java.util.Scanner(System.in));
             default:
                 throw new IllegalArgumentException("Unknown menu type: " + menuType);
         }
