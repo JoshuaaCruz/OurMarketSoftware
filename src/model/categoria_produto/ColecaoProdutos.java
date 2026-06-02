@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ColecaoProdutos {
-    private List<Produto> produtos; // Supondo que você tenha uma classe Produto
+    private List<Produto> produtos; // TODO: substituir por ItemProduto(?)
 
     public ColecaoProdutos() {
         this.produtos = new ArrayList<>();

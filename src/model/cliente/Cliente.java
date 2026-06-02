@@ -4,7 +4,10 @@
  */
 package model.cliente;
 
+import java.util.ArrayList;
+import java.util.List;
 import model.categoria_produto.ColecaoProdutos;
+import model.categoria_produto.Produto;
 import model.contaBancaria.ContaBancaria;
 
 /**
@@ -17,10 +20,14 @@ public class Cliente implements Cliente_if{
     private ContaBancaria contaCliente;
     private ColecaoProdutos estoque, carrinho;
     private double nota;
+    private List<Produto> listaDesejos;
+    private List<Produto> produtosVendidos;
 
     public Cliente() {
         this.estoque = new ColecaoProdutos();
         this.carrinho = new ColecaoProdutos();
+        this.listaDesejos = new ArrayList<>();
+        this.produtosVendidos = new ArrayList<>();
     }
 
     @Override
@@ -100,7 +107,24 @@ public class Cliente implements Cliente_if{
     }
 
     public int getQuantidadeProdutosVendidos() {
-        return estoque.getProdutos().size();
+        return produtosVendidos.size();
+    }
+
+    public List<Produto> getListaDesejos() {
+        return listaDesejos;
+    }
+
+    public void addProdutoListaDesejo(Produto produto){
+        if (!this.listaDesejos.contains(produto)){
+            this.listaDesejos.add(produto);
+        }
+    }
+
+    public void deleteListaDesejos(){
+        this.listaDesejos.clear();
+    }
+
+    public void removeProdutoListaDesejo(Produto produto){
+            this.listaDesejos.remove(produto);
     }
 }
-
