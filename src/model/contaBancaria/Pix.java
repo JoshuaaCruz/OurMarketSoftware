@@ -1,20 +1,23 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model.contaBancaria;
 
-/**
- *
- * @author joshu
- */
 public class Pix implements FormaDePagamento {
 
     @Override
-    public boolean pagar(ContaBancaria origem, ContaBancaria destino, double valor) {
+    public String getNome() {
+        return "Pix";
+    }
 
-        return origem.trasferir(valor, destino);
-        
+    @Override
+    public String getDescricao(ContaBancaria conta) {
+        return String.format("Saldo: R$ %.2f", conta.getSaldoConta());
+    }
+
+    @Override
+    public boolean pagar(ContaBancaria origem, ContaBancaria destino, double valor) {
+        if (origem == null || destino == null || valor <= 0) return false;
+        if (!origem.sacar(valor)) return false;
+        destino.depositar(valor);
+        return true;
     }
     
 }

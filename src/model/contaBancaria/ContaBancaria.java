@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model.contaBancaria;
 
 import java.util.ArrayList;
@@ -13,12 +9,17 @@ public class ContaBancaria {
     private double saldoConta;
     private double fatura;
     private double limiteFatura;
-    private List<String> formasPagamento;
+
+    // Strategy Pattern — available payment methods for this account
+    private List<FormaDePagamento> formasPagamento;
+
+    // estrategia de pagamento selecionada usada por pagar()
+    private FormaDePagamento formaDePagamentoSelec;
 
     public ContaBancaria() {
         this.formasPagamento = new ArrayList<>();
-        this.formasPagamento.add("Pix");
-        this.formasPagamento.add("Cartão de Crédito");
+        this.formasPagamento.add(new Pix());
+        this.formasPagamento.add(new CartaoCredito()); // TODO: Verificar se deveria ser adicionado automaticamente as formas de pgmento na inicializacao
     }
 
     public String getNumero(){
@@ -48,74 +49,88 @@ public class ContaBancaria {
         this.limiteFatura = limiteFatura;
     }
 
-    /**
-     * @return the fatura
-     */
-
-
     public double getFatura() {
         return fatura;
     }
-    
-    public void incrementaFatura(double valor){
+
+    public void incrementaFatura(double valor) {
         fatura += valor;
-    }
-    
-    
-    
-    public void depositar(double valor){
-        if(valor > 0){
-            saldoConta += valor;
-        }
-    }
-
-    public boolean sacar(double valor){
-        if(valor > 0 && saldoConta >= valor){
-            saldoConta -= valor;
-            return true;
-        }
-        return false;
-    }
-    
-    public boolean trasferir(double valor, ContaBancaria contaDestino){
-        if (contaDestino == null) {
-            return false;
-        }
-
-        if(this.sacar(valor)){
-            contaDestino.depositar(valor);
-            return true;
-        }
-        return false;
-    }
-
-    public boolean transferir(double valor, ContaBancaria contaDestino) {
-        return trasferir(valor, contaDestino);
-    }
-
-    public List<String> getFormasPagamento() {
-        return formasPagamento;
-    }
-
-    public boolean adicionarFormaPagamento(String forma) {
-        if (forma != null && !forma.isBlank() && !formasPagamento.contains(forma)) {
-            formasPagamento.add(forma);
-            return true;
-        }
-        return false;
-    }
-
-    public boolean removerFormaPagamento(String forma) {
-        return formasPagamento.remove(forma);
-    }
-
-    public boolean temFormaPagamento(String forma) {
-        return formasPagamento.contains(forma);
     }
 
     public void pagarFatura(double valor) {
         if (valor > 0 && fatura >= valor) {
             fatura -= valor;
         }
+    }
+
+    public void depositar(double valor) {
+        if (valor > 0) {
+            saldoConta += valor;
+        }
+    }
+
+    public boolean sacar(double valor) {
+        if (valor > 0 && saldoConta >= valor) {
+            saldoConta -= valor;
+            return true;
+        }
+        return false;
+    }
+
+    public boolean transferir(double valor, ContaBancaria contaDestino) {
+        if (contaDestino == null) return false;
+        if (this.sacar(valor)) {
+            contaDestino.depositar(valor);
+            return true;
+        }
+        return false;
+    }
+
+    // retorna todas as formas de pagamento disponíveis
+    public List<FormaDePagamento> getFormasPagamento() {
+        return formasPagamento;
+    }
+
+    // retorna a forma de pagamento selecionada
+    public FormaDePagamento getFormaDePagamentoSelec() {
+        return formaDePagamentoSelec;
+    }
+
+    /**
+     * Selects a payment strategy that must already be registered on this account.
+     * @return true if the strategy was found and selected, false otherwise
+     */
+    public boolean selecionarFormaPagamento(FormaDePagamento forma) {
+        for (FormaDePagamento f : formasPagamento) {
+            if (f.getNome().equals(forma.getNome())) {
+                this.formaDePagamentoSelec = f;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean pagar(ContaBancaria destino, double valor) {
+        if (formaDePagamentoSelec == null) return false;
+        return formaDePagamentoSelec.pagar(this, destino, valor);
+    }
+
+    public boolean adicionarFormaPagamento(FormaDePagamento forma) {
+        if (forma != null && !temFormaPagamento(forma.getNome())) {
+            formasPagamento.add(forma);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean removerFormaPagamento(FormaDePagamento forma) {
+        return formasPagamento.remove(forma);
+    }
+
+    public boolean temFormaPagamento(String nome) {
+        for (FormaDePagamento f : formasPagamento) {
+            if (f.getNome().equals(nome)) return true;
+        }
+        return false;
     }
 }

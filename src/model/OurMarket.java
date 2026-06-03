@@ -13,10 +13,8 @@ import model.categoria_produto.Categoria_if;
 import model.categoria_produto.ColecaoProdutos;
 import model.categoria_produto.Produto;
 import model.cliente.Cliente;
-import model.contaBancaria.CartaoCredito;
 import model.contaBancaria.ContaBancaria;
 import model.contaBancaria.FormaDePagamento;
-import model.contaBancaria.Pix;
 
 public class OurMarket {
     
@@ -213,34 +211,18 @@ public class OurMarket {
     }
 
     /**
-     * Processes a purchase from comprador to vendedor using the specified payment method.
+     * Processes a purchase from comprador to vendedor using the provided payment strategy.
+     * The strategy must already be registered on the comprador's account.
      */
-    public boolean processarCompra(Cliente comprador, Cliente vendedor, double valor, String formaPagamento) {
-        if (comprador == null || vendedor == null || valor <= 0 || formaPagamento == null) {
-            return false;
-        }
+    public boolean processarCompra(Cliente comprador, Cliente vendedor, double valor, FormaDePagamento forma) {
+        if (comprador == null || vendedor == null || valor <= 0 || forma == null) return false;
+
         ContaBancaria origem = comprador.getContaCliente();
         ContaBancaria destino = vendedor.getContaCliente();
-        if (origem == null || destino == null) {
-            return false;
-        }
+        if (origem == null || destino == null) return false;
 
-        FormaDePagamento forma;
-        switch (formaPagamento.toLowerCase()) {
-            case "pix":
-                forma = new Pix();
-                break;
-            case "cartão de crédito":
-            case "cartao de crédito":
-            case "cartao de credito":
-            case "cartão de credito":
-                forma = new CartaoCredito();
-                break;
-            default:
-                return false;
-        }
-
-        return forma.pagar(origem, destino, valor);
+        if (!origem.selecionarFormaPagamento(forma)) return false;
+        return origem.pagar(destino, valor);
     }
 
     {

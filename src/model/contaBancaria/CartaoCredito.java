@@ -1,10 +1,18 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model.contaBancaria;
 
 public class CartaoCredito implements FormaDePagamento {
+
+    @Override
+    public String getNome() {
+        return "Cartão de Crédito";
+    }
+
+    @Override
+    public String getDescricao(ContaBancaria conta) {
+        return String.format("Limite: R$ %.2f | Fatura: R$ %.2f | Disponível: R$ %.2f",
+                conta.getLimiteFatura(), conta.getFatura(),
+                conta.getLimiteFatura() - conta.getFatura());
+    }
 
     @Override
     public boolean pagar(ContaBancaria origem, ContaBancaria destino, double valor) {

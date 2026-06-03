@@ -2,12 +2,21 @@ package view.terminal;
 
 import java.util.List;
 import java.util.Scanner;
+import model.contaBancaria.Boleto;
+import model.contaBancaria.CartaoCredito;
 import model.contaBancaria.ContaBancaria;
+import model.contaBancaria.FormaDePagamento;
+import model.contaBancaria.Pix;
 import view.Menu_if;
 
 public class MenuFormaPagamento_View_Textual implements Menu_if {
 
-    private static final String[] FORMAS_DISPONIVEIS = {"Pix", "Cartão de Crédito"};
+    // estrategias de pagamento disponíveis
+    private static final FormaDePagamento[] FORMAS_DISPONIVEIS = {
+        new Pix(),
+        new CartaoCredito(),
+        new Boleto()
+    };
 
     private final ContaBancaria conta;
     private final Scanner scanner;
@@ -60,7 +69,7 @@ public class MenuFormaPagamento_View_Textual implements Menu_if {
 
     private void listar() {
         System.out.println("\n--- Formas de Pagamento Cadastradas ---");
-        List<String> formas = conta.getFormasPagamento();
+        List<FormaDePagamento> formas = conta.getFormasPagamento();
 
         if (formas.isEmpty()) {
             System.out.println("Nenhuma forma de pagamento cadastrada.");
@@ -68,19 +77,9 @@ public class MenuFormaPagamento_View_Textual implements Menu_if {
         }
 
         for (int i = 0; i < formas.size(); i++) {
-            String forma = formas.get(i);
-            System.out.print("  " + (i + 1) + ". " + forma);
-
-            if (forma.equals("Cartão de Crédito")) {
-                System.out.printf("  (Limite: R$ %.2f | Fatura atual: R$ %.2f | Disponível: R$ %.2f)",
-                    conta.getLimiteFatura(),
-                    conta.getFatura(),
-                    conta.getLimiteFatura() - conta.getFatura());
-            } else if (forma.equals("Pix")) {
-                System.out.printf("  (Saldo: R$ %.2f)", conta.getSaldoConta());
-            }
-
-            System.out.println();
+            FormaDePagamento forma = formas.get(i);
+            System.out.println("  " + (i + 1) + ". " + forma.getNome()
+                    + "  (" + forma.getDescricao(conta) + ")");
         }
     }
 
@@ -89,8 +88,8 @@ public class MenuFormaPagamento_View_Textual implements Menu_if {
         System.out.println("Formas disponíveis:");
 
         for (int i = 0; i < FORMAS_DISPONIVEIS.length; i++) {
-            String status = conta.temFormaPagamento(FORMAS_DISPONIVEIS[i]) ? " [já cadastrada]" : "";
-            System.out.println("  " + (i + 1) + ". " + FORMAS_DISPONIVEIS[i] + status);
+            String status = conta.temFormaPagamento(FORMAS_DISPONIVEIS[i].getNome()) ? " [já cadastrada]" : "";
+            System.out.println("  " + (i + 1) + ". " + FORMAS_DISPONIVEIS[i].getNome() + status);
         }
 
         System.out.println("  0. Cancelar");
@@ -108,13 +107,14 @@ public class MenuFormaPagamento_View_Textual implements Menu_if {
             return;
         }
 
-        String forma = FORMAS_DISPONIVEIS[opcao - 1];
-        if (conta.temFormaPagamento(forma)) {
+        FormaDePagamento forma = FORMAS_DISPONIVEIS[opcao - 1];
+
+        if (conta.temFormaPagamento(forma.getNome())) {
             System.out.println("Esta forma de pagamento já está cadastrada.");
             return;
         }
 
-        if (forma.equals("Cartão de Crédito")) {
+        if (forma instanceof CartaoCredito) {
             System.out.print("Defina o limite do cartão: R$ ");
             double limite = scanner.nextDouble();
             scanner.nextLine();
@@ -122,12 +122,12 @@ public class MenuFormaPagamento_View_Textual implements Menu_if {
         }
 
         conta.adicionarFormaPagamento(forma);
-        System.out.println(forma + " cadastrado com sucesso!");
+        System.out.println(forma.getNome() + " cadastrado com sucesso!");
     }
 
     private void editar() {
         System.out.println("\n--- Editar Forma de Pagamento ---");
-        List<String> formas = conta.getFormasPagamento();
+        List<FormaDePagamento> formas = conta.getFormasPagamento();
 
         if (formas.isEmpty()) {
             System.out.println("Nenhuma forma cadastrada.");
@@ -135,7 +135,7 @@ public class MenuFormaPagamento_View_Textual implements Menu_if {
         }
 
         for (int i = 0; i < formas.size(); i++) {
-            System.out.println("  " + (i + 1) + ". " + formas.get(i));
+            System.out.println("  " + (i + 1) + ". " + formas.get(i).getNome());
         }
 
         System.out.print("Escolha o número para editar (0 para cancelar): ");
@@ -152,11 +152,11 @@ public class MenuFormaPagamento_View_Textual implements Menu_if {
             return;
         }
 
-        String forma = formas.get(indice);
-        if (forma.equals("Cartão de Crédito")) {
+        FormaDePagamento forma = formas.get(indice);
+        if (forma instanceof CartaoCredito) {
             editarCartaoCredito();
-        } else if (forma.equals("Pix")) {
-            System.out.println("O Pix não possui configurações editáveis.");
+        } else {
+            System.out.println(forma.getNome() + " não possui configurações editáveis.");
         }
     }
 
@@ -179,7 +179,7 @@ public class MenuFormaPagamento_View_Textual implements Menu_if {
 
     private void excluir() {
         System.out.println("\n--- Excluir Forma de Pagamento ---");
-        List<String> formas = conta.getFormasPagamento();
+        List<FormaDePagamento> formas = conta.getFormasPagamento();
 
         if (formas.isEmpty()) {
             System.out.println("Nenhuma forma cadastrada.");
@@ -187,7 +187,7 @@ public class MenuFormaPagamento_View_Textual implements Menu_if {
         }
 
         for (int i = 0; i < formas.size(); i++) {
-            System.out.println("  " + (i + 1) + ". " + formas.get(i));
+            System.out.println("  " + (i + 1) + ". " + formas.get(i).getNome());
         }
 
         System.out.print("Escolha o número para excluir (0 para cancelar): ");
@@ -204,13 +204,13 @@ public class MenuFormaPagamento_View_Textual implements Menu_if {
             return;
         }
 
-        String forma = formas.get(indice);
-        System.out.print("Confirma exclusão de '" + forma + "'? (s/n): ");
+        FormaDePagamento forma = formas.get(indice);
+        System.out.print("Confirma exclusão de '" + forma.getNome() + "'? (s/n): ");
         String confirmacao = scanner.nextLine().trim().toLowerCase();
 
         if (confirmacao.equals("s")) {
             conta.removerFormaPagamento(forma);
-            System.out.println(forma + " removido com sucesso!");
+            System.out.println(forma.getNome() + " removido com sucesso!");
         } else {
             System.out.println("Exclusão cancelada.");
         }
