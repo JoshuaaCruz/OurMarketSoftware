@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model.cliente;
 
 import java.util.ArrayList;
@@ -10,12 +6,9 @@ import model.categoria_produto.ColecaoProdutos;
 import model.categoria_produto.Produto;
 import model.contaBancaria.ContaBancaria;
 
-/**
- *
- * @author joshua.cruz
- */
+
 public class Cliente implements Cliente_if{
-    private String nome, CPF;
+    private String nome, CPF, login, senha;
     private Endereco endereco;
     private ContaBancaria contaCliente;
     private ColecaoProdutos estoque, carrinho;
@@ -46,9 +39,22 @@ public class Cliente implements Cliente_if{
         this.nome = nome;
     }
 
-    /**
-     * @param CPF the CPF to set
-     */
+    public String getLogin() {
+        return login;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
+    public String getSenha() {
+        return senha;
+    }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
+    }
+
     public void setCPF(String CPF) {
         this.CPF = CPF;
     }

@@ -29,10 +29,7 @@ public class ContaBancaria {
         this.numeroConta = numeroConta;
     }
 
-    public double getsaldoConta(){
-        return saldoConta;
-    }
-
+    
     public double getSaldoConta() {
         return saldoConta;
     }

@@ -27,18 +27,27 @@ public class OurMarket_View_Textual implements OurMarket_View {
         int opcao = -1;
 
         while (opcao != 0) {
+            Cliente logado = model.getClienteLogado();
             System.out.println("\n===========================");
             System.out.println("       MENU PRINCIPAL      ");
             System.out.println("===========================");
+            if (logado != null) {
+                System.out.println(" Cliente: " + logado.getName());
+            } else {
+                System.out.println(" Cliente deslogado. Cadastre-se ou faça login!");
+            }
+            System.out.println("---------------------------");
             System.out.println("1. Cadastrar Cliente e Conta");
-            System.out.println("2. Ver dados do Cliente");
-            System.out.println("3. Consultar Saldo");
-            System.out.println("4. Depositar");
-            System.out.println("5. Sacar");
-            System.out.println("6. Gerenciar Forma de Pagamento");
-            System.out.println("7. Ver / Pagar Fatura do Cartão");
-            System.out.println("8. Gerenciar Produtos");
-            System.out.println("9. Gerenciar Categorias");
+            System.out.println("2. Login");
+            System.out.println("3. Logoff");
+            System.out.println("4. Ver dados do Cliente");
+            System.out.println("5. Consultar Saldo");
+            System.out.println("6. Depositar");
+            System.out.println("7. Sacar");
+            System.out.println("8. Gerenciar Forma de Pagamento");
+            System.out.println("9. Ver / Pagar Fatura do Cartão");
+            System.out.println("10. Gerenciar Produtos");
+            System.out.println("11. Gerenciar Categorias");
             System.out.println("0. Sair");
             System.out.print("Escolha uma operação: ");
 
@@ -50,27 +59,33 @@ public class OurMarket_View_Textual implements OurMarket_View {
                     cadastrarClienteEConta();
                     break;
                 case 2:
-                    verDadosCliente();
+                    fazerLogin();
                     break;
                 case 3:
-                    consultarSaldo();
+                    fazerLogoff();
                     break;
                 case 4:
-                    depositar();
+                    verDadosCliente();
                     break;
                 case 5:
-                    sacar();
+                    consultarSaldo();
                     break;
                 case 6:
-                    gerenciarFormaPagamento();
+                    depositar();
                     break;
                 case 7:
-                    verPagarFaturaCartao();
+                    sacar();
                     break;
                 case 8:
-                    gerenciarProdutos();
+                    gerenciarFormaPagamento();
                     break;
                 case 9:
+                    verPagarFaturaCartao();
+                    break;
+                case 10:
+                    gerenciarProdutos();
+                    break;
+                case 11:
                     gerenciarCategorias();
                     break;
                 case 0:
@@ -91,7 +106,15 @@ public class OurMarket_View_Textual implements OurMarket_View {
         System.out.print("CPF: ");
         cliente.setCPF(scanner.nextLine());
 
-        System.out.println("\n--- 2. ENDEREÇO ---");
+        System.out.println("\n--- 2. CREDENCIAIS DE ACESSO ---");
+        System.out.print("Login: ");
+        String login = scanner.nextLine();
+        System.out.print("Senha: ");
+        String senha = scanner.nextLine();
+        cliente.setLogin(login);
+        cliente.setSenha(senha);
+
+        System.out.println("\n--- 3. ENDEREÇO ---");
         System.out.print("Estado (UF): ");
         String uf = scanner.nextLine();
         System.out.print("Cidade: ");
@@ -105,7 +128,7 @@ public class OurMarket_View_Textual implements OurMarket_View {
         String complemento = scanner.nextLine();
         cliente.setEndereco(new Endereco(uf, cidade, rua, numero, complemento));
 
-        System.out.println("\n--- 3. DADOS DA CONTA ---");
+        System.out.println("\n--- 4. DADOS DA CONTA ---");
         ContaBancaria conta = new ContaBancaria();
         System.out.print("Número da conta: ");
         conta.setNumero(scanner.nextLine());
@@ -115,13 +138,13 @@ public class OurMarket_View_Textual implements OurMarket_View {
         cliente.setContaCliente(conta);
 
         model.adicionarCliente(cliente);
-        model.setClienteLogado(cliente);
+        model.login(login, senha);
 
-        System.out.println("\n Cadastro realizado com sucesso!");
+        System.out.println("\n Cadastro realizado com sucesso! Você já está logado como '" + cliente.getName() + "'.");
     }
 
     private void verDadosCliente() {
-        Cliente cliente = getClienteCadastrado();
+        Cliente cliente = getClienteLogado();
         if (cliente == null) {
             return;
         }
@@ -146,7 +169,7 @@ public class OurMarket_View_Textual implements OurMarket_View {
         }
 
         System.out.println("\n--- Saldo ---");
-        System.out.println("Saldo atual: R$ " + conta.getsaldoConta());
+        System.out.println("Saldo atual: R$ " + conta.getSaldoConta());
     }
 
     private void depositar() {
@@ -228,7 +251,7 @@ public class OurMarket_View_Textual implements OurMarket_View {
     }
 
     private void gerenciarProdutos() {
-        Cliente cliente = getClienteCadastrado();
+        Cliente cliente = getClienteLogado();
         if (cliente == null) {
             return;
         }
@@ -252,16 +275,46 @@ public class OurMarket_View_Textual implements OurMarket_View {
         }
     }
 
-    private Cliente getClienteCadastrado() {
+    private void fazerLogin() {
+        if (model.getClienteLogado() != null) {
+            System.out.println("\n Já existe uma sessão ativa para '" + model.getClienteLogado().getName() + "'. Faça logoff primeiro.");
+            return;
+        }
+
+        System.out.println("\n--- LOGIN ---");
+        System.out.print("Login: ");
+        String login = scanner.nextLine();
+        System.out.print("Senha: ");
+        String senha = scanner.nextLine();
+
+        Cliente cliente = model.login(login, senha);
+        if (cliente != null) {
+            System.out.println("\n Bem-vindo(a), " + cliente.getName() + "!");
+        } else {
+            System.out.println("\n Login ou senha incorretos.");
+        }
+    }
+
+    private void fazerLogoff() {
+        Cliente logado = model.getClienteLogado();
+        if (logado == null) {
+            System.out.println("\n Nenhuma sessão ativa.");
+            return;
+        }
+        model.logoff();
+        System.out.println("\n Sessão encerrada. Até logo, " + logado.getName() + "!");
+    }
+
+    private Cliente getClienteLogado() {
         Cliente cliente = model.getClienteLogado();
         if (cliente == null) {
-            System.out.println("\n Erro: Nenhum cliente cadastrado. Escolha a opção 1 primeiro.");
+            System.out.println("\n Erro: Nenhum cliente logado. Escolha a opção 1 ou 2 primeiro.");
         }
         return cliente;
     }
 
     private ContaBancaria getContaCadastrada() {
-        Cliente cliente = getClienteCadastrado();
+        Cliente cliente = getClienteLogado();
         if (cliente == null) {
             return null;
         }

@@ -51,6 +51,26 @@ public class OurMarket {
         this.clienteLogado = cliente;
     }
 
+    /**
+     * Finds a client by login and senha and sets them as the logged-in user.
+     * @return the matched Cliente, or null if credentials are invalid
+     */
+    public Cliente login(String login, String senha) {
+        if (login == null || senha == null) return null;
+        for (Cliente c : clientes) {
+            if (login.equals(c.getLogin()) && senha.equals(c.getSenha())) {
+                clienteLogado = c;
+                return c;
+            }
+        }
+        return null;
+    }
+
+    
+    public void logoff() {
+        clienteLogado = null;
+    }
+
     private void initOrLoad() {
         // inicializa categorias
         Categoria g1, g2;
