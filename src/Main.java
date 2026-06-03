@@ -5,10 +5,6 @@ import model.fabrica.Fabrica_Grafica;
 import model.fabrica.Fabrica_Textual;
 import view.LivreMercado_View;
 
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 
 public class Main {
  

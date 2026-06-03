@@ -13,7 +13,7 @@ public class Produtos_Menu_View_Textual implements Menu_if {
 
     private final LivreMercado model;
     private final Scanner scanner;
-    private final Cliente clienteFicticio;
+
 
     public Produtos_Menu_View_Textual(LivreMercado model) {
         this(model, new Scanner(System.in));
@@ -22,16 +22,8 @@ public class Produtos_Menu_View_Textual implements Menu_if {
     public Produtos_Menu_View_Textual(LivreMercado model, Scanner scanner) {
         this.model = model;
         this.scanner = scanner;
-        this.clienteFicticio = criarClienteFicticio();
     }
 
-    private Cliente criarClienteFicticio() {
-        Cliente ficticio = new Cliente();
-        ficticio.setNome("Loja Padrão");
-        ficticio.setCPF("00000000000");
-        ficticio.calculaNotaColecao(ficticio.getEstoque());
-        return ficticio;
-    }
 
     @Override
     public void mostre() {
@@ -102,7 +94,11 @@ public class Produtos_Menu_View_Textual implements Menu_if {
 
             switch (opcao) {
                 case 1:
-                    adicionarProduto(colecao, nomeColecao);
+                    if (colecao == model.getClienteLogado().getCarrinho()) {
+                        adicionarProdutoAoCarrinho(cliente);
+                    } else {
+                        adicionarProdutoEstoque(colecao);
+                    }
                     break;
                 case 2:
                     verProdutos(colecao, nomeColecao);
@@ -198,64 +194,77 @@ public class Produtos_Menu_View_Textual implements Menu_if {
         System.out.println("-------------------------------------------------");
     }
 
-    //TODO: refatorar para adicionar produtos fora do carrinho/estoque próprios (produtos de outros vendedores)
-    private void adicionarProdutoListaDesejos(Cliente cliente) {
-        System.out.println("\n--- ADICIONAR À LISTA DE DESEJOS ---");
-        System.out.println("Adicionar produto de qual coleção?");
-        System.out.println("1. Estoque");
-        System.out.println("2. Carrinho");
+    
+    private Produto escolherProdutoDeVendedor(Cliente vendedor) {
+        List<Cliente> outrosVendedores = new java.util.ArrayList<>();
+        for (Cliente c : model.getClientes()) {
+            if (!c.equals(vendedor)) {
+                outrosVendedores.add(c);
+            }
+        }
+
+        if (outrosVendedores.isEmpty()) {
+            System.out.println(" Nenhum outro vendedor disponível no momento.");
+            return null;
+        }
+
+        System.out.println("\nEscolha o vendedor cujos produtos deseja ver:");
+        for (int i = 0; i < outrosVendedores.size(); i++) {
+            System.out.println((i + 1) + ". " + outrosVendedores.get(i).getName());
+        }
         System.out.println("0. Cancelar");
         System.out.print("Escolha: ");
 
-        int origem = scanner.nextInt();
+        int vendedorIdx = scanner.nextInt();
         scanner.nextLine();
 
-        ColecaoProdutos colecaoOrigem;
-        String nomeOrigem;
-
-        switch (origem) {
-            case 1:
-                colecaoOrigem = cliente.getEstoque();
-                nomeOrigem = "Estoque";
-                break;
-            case 2:
-                colecaoOrigem = cliente.getCarrinho();
-                nomeOrigem = "Carrinho";
-                break;
-            case 0:
-                System.out.println("Operação cancelada.");
-                return;
-            default:
-                System.out.println(" Opção inválida.");
-                return;
+        if (vendedorIdx == 0) {
+            System.out.println("Operação cancelada.");
+            return null;
         }
 
-        List<Produto> produtos = colecaoOrigem.getProdutos();
+        if (vendedorIdx < 1 || vendedorIdx > outrosVendedores.size()) {
+            System.out.println(" Opção inválida.");
+            return null;
+        }
+
+        Cliente vendedorEscolhido = outrosVendedores.get(vendedorIdx - 1);
+        List<Produto> produtos = vendedorEscolhido.getEstoque().getProdutos();
+
         if (produtos.isEmpty()) {
-            System.out.println(" Nenhum produto disponível no " + nomeOrigem + ".");
-            return;
+            System.out.println(" O vendedor '" + vendedorEscolhido.getName() + "' não possui produtos no estoque.");
+            return null;
         }
 
-        System.out.println("\nProdutos disponíveis no " + nomeOrigem + ":");
+        System.out.println("\nProdutos disponíveis de '" + vendedorEscolhido.getName() + "':");
         for (int i = 0; i < produtos.size(); i++) {
-            System.out.println((i + 1) + ". " + produtos.get(i).getNome());
+            Produto p = produtos.get(i);
+            System.out.printf("  %d. %-25s R$ %.2f  (Nota: %.1f)%n",
+                    i + 1, p.getNome(), p.getPrecoBase(), p.getNota());
         }
 
-        System.out.print("\nEscolha o número do produto a adicionar (0 para cancelar): ");
+        System.out.print("\nEscolha o número do produto (0 para cancelar): ");
         int escolha = scanner.nextInt();
         scanner.nextLine();
 
         if (escolha == 0) {
             System.out.println("Operação cancelada.");
-            return;
+            return null;
         }
 
         if (escolha < 1 || escolha > produtos.size()) {
             System.out.println(" Erro: Número inválido.");
-            return;
+            return null;
         }
 
-        Produto produto = produtos.get(escolha - 1);
+        return produtos.get(escolha - 1);
+    }
+
+    private void adicionarProdutoListaDesejos(Cliente cliente) {
+        System.out.println("\n--- ADICIONAR À LISTA DE DESEJOS ---");
+
+        Produto produto = escolherProdutoDeVendedor(cliente);
+        if (produto == null) return;
 
         if (cliente.getListaDesejos().contains(produto)) {
             System.out.println(" O produto '" + produto.getNome() + "' já está na sua lista de desejos.");
@@ -263,6 +272,16 @@ public class Produtos_Menu_View_Textual implements Menu_if {
             cliente.addProdutoListaDesejo(produto);
             System.out.println("\n Produto '" + produto.getNome() + "' adicionado à Lista de Desejos com sucesso!");
         }
+    }
+
+    private void adicionarProdutoAoCarrinho(Cliente cliente) {
+        System.out.println("\n--- ADICIONAR AO CARRINHO ---");
+
+        Produto produto = escolherProdutoDeVendedor(cliente);
+        if (produto == null) return;
+
+        cliente.getCarrinho().adicionarProduto(produto);
+        System.out.println("\n Produto '" + produto.getNome() + "' adicionado ao Carrinho com sucesso!");
     }
 
 
@@ -320,7 +339,7 @@ public class Produtos_Menu_View_Textual implements Menu_if {
         }
     }
 
-    private void adicionarProduto(ColecaoProdutos colecao, String nomeColecao) {
+    private void adicionarProdutoEstoque(ColecaoProdutos colecao) {
         System.out.println("\n--- ADICIONAR PRODUTO ---");
 
         System.out.print("Nome do produto: ");
@@ -339,24 +358,10 @@ public class Produtos_Menu_View_Textual implements Menu_if {
 
         Produto novoProduto = new Produto(nome, descricao, preco);
         novoProduto.setNota(nota);
+        novoProduto.setVendedor(model.getClienteLogado());
+        colecao.adicionarProduto(novoProduto);
 
-        Cliente vendedorEscolhido;
-        if (colecao == model.getClienteLogado().getEstoque()) {
-            vendedorEscolhido = model.getClienteLogado();
-            System.out.println("\nProduto será vinculado ao seu perfil de vendedor.");
-        } else {
-            vendedorEscolhido = clienteFicticio;
-            System.out.println("\nProduto será vinculado à Loja Padrão.");
-        }
-
-        novoProduto.setVendedor(vendedorEscolhido);
-        vendedorEscolhido.getEstoque().adicionarProduto(novoProduto);
-
-        if (colecao == model.getClienteLogado().getCarrinho()) {
-            colecao.adicionarProduto(novoProduto);
-        }
-
-        System.out.println("\n Produto '" + nome + "' adicionado ao " + nomeColecao + " com sucesso!");
+        System.out.println("\n Produto '" + nome + "' adicionado ao seu Estoque com sucesso!");
     }
 
     private void verProdutos(ColecaoProdutos colecao, String nomeColecao) {

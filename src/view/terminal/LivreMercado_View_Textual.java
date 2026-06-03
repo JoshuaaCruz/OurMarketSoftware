@@ -8,10 +8,6 @@ import model.contaBancaria.ContaBancaria;
 import view.LivreMercado_View;
 import view.Menu_if;
 
-/**
- *
- * @author joshua.cruz
- */
 public class LivreMercado_View_Textual implements LivreMercado_View {
 
     private final LivreMercado model;

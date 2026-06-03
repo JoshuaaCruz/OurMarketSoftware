@@ -18,10 +18,6 @@ import model.contaBancaria.ContaBancaria;
 import model.contaBancaria.FormaDePagamento;
 import model.contaBancaria.Pix;
 
-/**
- *
- * @author joshua.cruz
- */
 public class LivreMercado {
     
     private final List<Cliente> clientes;
@@ -80,6 +76,25 @@ public class LivreMercado {
         pecasCelular.addProduto(randP);
         pecasCelular.addProduto(randP2);
         g2.addCategoria(pecasCelular);
+
+        // inicializa vendedor padrão do sistema para ja haver produtos cadastrados
+        Cliente lojaPadrao = new Cliente();
+        lojaPadrao.setNome("Loja Padrão");
+        lojaPadrao.setCPF("00000000000");
+
+        Produto p1 = new Produto("Notebook Gamer", "Intel i9, 32GB RAM, RTX 4080", 8999.99);
+        Produto p2 = new Produto("Fone Bluetooth Pro", "Cancelamento de ruído ativo, 40h de bateria", 599.90);
+        Produto p3 = new Produto("SSD 1TB NVMe", "Leitura 7000MB/s, compatível PCIe 4.0", 349.90);
+
+        p1.setNota(5); p1.setVendedor(lojaPadrao);
+        p2.setNota(3); p2.setVendedor(lojaPadrao);
+        p3.setNota(4); p3.setVendedor(lojaPadrao);
+
+        lojaPadrao.getEstoque().adicionarProduto(p1);
+        lojaPadrao.getEstoque().adicionarProduto(p2);
+        lojaPadrao.getEstoque().adicionarProduto(p3);
+
+        clientes.add(lojaPadrao);
     }
     
     /**
