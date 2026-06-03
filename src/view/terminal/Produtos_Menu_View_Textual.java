@@ -2,7 +2,7 @@ package view.terminal;
 
 import java.util.List;
 import java.util.Scanner;
-import model.LivreMercado;
+import model.OurMarket;
 import model.categoria_produto.ColecaoProdutos;
 import model.categoria_produto.Produto;
 import model.cliente.Cliente;
@@ -11,15 +11,15 @@ import view.Menu_if;
 
 public class Produtos_Menu_View_Textual implements Menu_if {
 
-    private final LivreMercado model;
+    private final OurMarket model;
     private final Scanner scanner;
 
 
-    public Produtos_Menu_View_Textual(LivreMercado model) {
+    public Produtos_Menu_View_Textual(OurMarket model) {
         this(model, new Scanner(System.in));
     }
 
-    public Produtos_Menu_View_Textual(LivreMercado model, Scanner scanner) {
+    public Produtos_Menu_View_Textual(OurMarket model, Scanner scanner) {
         this.model = model;
         this.scanner = scanner;
     }
@@ -194,7 +194,7 @@ public class Produtos_Menu_View_Textual implements Menu_if {
         System.out.println("-------------------------------------------------");
     }
 
-    
+
     private Produto escolherProdutoDeVendedor(Cliente vendedor) {
         List<Cliente> outrosVendedores = new java.util.ArrayList<>();
         for (Cliente c : model.getClientes()) {

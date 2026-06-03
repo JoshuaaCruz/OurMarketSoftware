@@ -1,19 +1,19 @@
 package view.terminal;
 
 import java.util.Scanner;
-import model.LivreMercado;
+import model.OurMarket;
 import model.cliente.Cliente;
 import model.cliente.Endereco;
 import model.contaBancaria.ContaBancaria;
-import view.LivreMercado_View;
+import view.OurMarket_View;
 import view.Menu_if;
 
-public class LivreMercado_View_Textual implements LivreMercado_View {
+public class OurMarket_View_Textual implements OurMarket_View {
 
-    private final LivreMercado model;
+    private final OurMarket model;
     private final Scanner scanner;
 
-    public LivreMercado_View_Textual(LivreMercado model) {
+    public OurMarket_View_Textual(OurMarket model) {
         this.model = model;
         this.scanner = new Scanner(System.in);
     }

@@ -5,19 +5,19 @@
 package model.fabrica;
 
 import model.Fabrica;
-import model.LivreMercado;
+import model.OurMarket;
 import model.autenticador.Autenticador_if;
 import model.autenticador.Credencial_if;
 import model.cliente.Cliente_if;
 import view.Autenticador_View;
 import view.Cliente_View;
 import view.Credencial_View;
-import view.LivreMercado_View;
+import view.OurMarket_View;
 import view.Menu_if;
 import view.terminal.Autenticador_View_Textual;
 import view.terminal.Categoria_Menu_View_Textual;
 import view.terminal.CredencialLoginSenha_View_Textual;
-import view.terminal.LivreMercado_View_Textual;
+import view.terminal.OurMarket_View_Textual;
 import view.terminal.MenuFormaPagamento_View_Textual;
 import view.terminal.Produtos_Menu_View_Textual;
 
@@ -29,8 +29,8 @@ public class Fabrica_Textual extends Fabrica {
     }
 
     @Override
-    public LivreMercado_View new_LivreMercado_View(LivreMercado model) {
-        return new LivreMercado_View_Textual(model);
+    public OurMarket_View new_OurMarket_View(OurMarket model) {
+        return new OurMarket_View_Textual(model);
     }
 
     @Override
@@ -45,7 +45,7 @@ public class Fabrica_Textual extends Fabrica {
     }
 
     @Override
-    public Menu_if new_Menu_View(String menuType, LivreMercado model) {
+    public Menu_if new_Menu_View(String menuType, OurMarket model) {
         switch (menuType.toLowerCase()) {
             case "produtos":
                 return new Produtos_Menu_View_Textual(model);

@@ -15,7 +15,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import model.Fabrica;
-import model.LivreMercado;
+import model.OurMarket;
 import model.autenticador.Autenticacao;
 import model.autenticador.Credencial_if;
 import model.categoria_produto.Categoria_if;
@@ -23,13 +23,13 @@ import model.categoria_produto.Produto;
 import model.fabrica.Fabrica_Grafica;
 import view.Cliente_View;
 import view.Credencial_View;
-import view.LivreMercado_View;
+import view.OurMarket_View;
 
 /**
  *
  * @author joshua.cruz
  */
-public class LivreMercado_View_Grafico extends javax.swing.JFrame implements LivreMercado_View {
+public class OurMarket_View_Grafico extends javax.swing.JFrame implements OurMarket_View {
 
     /**
      * Creates new form NewJFrame
@@ -40,7 +40,7 @@ public class LivreMercado_View_Grafico extends javax.swing.JFrame implements Liv
     TreeModel joshModel;
     private HashMap<DefaultMutableTreeNode, Produto> nodeProductMap = new HashMap<>();
     
-    public LivreMercado_View_Grafico(LivreMercado model) {
+    public OurMarket_View_Grafico(OurMarket model) {
         this.model = model;
         this.initTree(this.model);
         
@@ -51,7 +51,7 @@ public class LivreMercado_View_Grafico extends javax.swing.JFrame implements Liv
         this.labelPreco.setVisible(false);
     }
     
-    private void initTree(LivreMercado model){
+    private void initTree(OurMarket model){
         JTree tree = this.arvoreCategorias;
         
         DefaultMutableTreeNode root = new DefaultMutableTreeNode("Categorias");
@@ -130,13 +130,13 @@ public class LivreMercado_View_Grafico extends javax.swing.JFrame implements Liv
         jMenu1.setText("jMenu1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("LivreMercado");
+        setTitle("OurMarket");
         addWindowListener(formListener);
 
         splitPrincipalVertical.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
 
         jLabel2.setFont(new java.awt.Font("Liberation Sans", 0, 24)); // NOI18N
-        jLabel2.setText("LivreMercado Topbar");
+        jLabel2.setText("OurMarket Topbar");
 
         jLabel1.setText("Icon");
 
@@ -301,34 +301,34 @@ public class LivreMercado_View_Grafico extends javax.swing.JFrame implements Liv
         FormListener() {}
         public void actionPerformed(java.awt.event.ActionEvent evt) {
             if (evt.getSource() == textPesquisaProdutos) {
-                LivreMercado_View_Grafico.this.textPesquisaProdutosActionPerformed(evt);
+                OurMarket_View_Grafico.this.textPesquisaProdutosActionPerformed(evt);
             }
             else if (evt.getSource() == itemSistemaCarregar) {
-                LivreMercado_View_Grafico.this.itemSistemaCarregarActionPerformed(evt);
+                OurMarket_View_Grafico.this.itemSistemaCarregarActionPerformed(evt);
             }
             else if (evt.getSource() == itemSistemaSalvar) {
-                LivreMercado_View_Grafico.this.itemSistemaSalvarActionPerformed(evt);
+                OurMarket_View_Grafico.this.itemSistemaSalvarActionPerformed(evt);
             }
             else if (evt.getSource() == itemSistemaAutenticar) {
-                LivreMercado_View_Grafico.this.itemSistemaAutenticarActionPerformed(evt);
+                OurMarket_View_Grafico.this.itemSistemaAutenticarActionPerformed(evt);
             }
             else if (evt.getSource() == itemSistemaSair) {
-                LivreMercado_View_Grafico.this.itemSistemaSairActionPerformed(evt);
+                OurMarket_View_Grafico.this.itemSistemaSairActionPerformed(evt);
             }
             else if (evt.getSource() == itemMercadoClientes) {
-                LivreMercado_View_Grafico.this.itemMercadoClientesActionPerformed(evt);
+                OurMarket_View_Grafico.this.itemMercadoClientesActionPerformed(evt);
             }
             else if (evt.getSource() == itemMercadoCategorias) {
-                LivreMercado_View_Grafico.this.itemMercadoCategoriasActionPerformed(evt);
+                OurMarket_View_Grafico.this.itemMercadoCategoriasActionPerformed(evt);
             }
             else if (evt.getSource() == itemMercadoProdutos) {
-                LivreMercado_View_Grafico.this.itemMercadoProdutosActionPerformed(evt);
+                OurMarket_View_Grafico.this.itemMercadoProdutosActionPerformed(evt);
             }
         }
 
         public void mouseClicked(java.awt.event.MouseEvent evt) {
             if (evt.getSource() == arvoreCategorias) {
-                LivreMercado_View_Grafico.this.arvoreCategoriasMouseClicked(evt);
+                OurMarket_View_Grafico.this.arvoreCategoriasMouseClicked(evt);
             }
         }
 
@@ -363,14 +363,14 @@ public class LivreMercado_View_Grafico extends javax.swing.JFrame implements Liv
         }
 
         public void windowOpened(java.awt.event.WindowEvent evt) {
-            if (evt.getSource() == LivreMercado_View_Grafico.this) {
-                LivreMercado_View_Grafico.this.formWindowOpened(evt);
+            if (evt.getSource() == OurMarket_View_Grafico.this) {
+                OurMarket_View_Grafico.this.formWindowOpened(evt);
             }
         }
 
         public void valueChanged(javax.swing.event.TreeSelectionEvent evt) {
             if (evt.getSource() == arvoreCategorias) {
-                LivreMercado_View_Grafico.this.arvoreCategoriasValueChanged(evt);
+                OurMarket_View_Grafico.this.arvoreCategoriasValueChanged(evt);
             }
         }
     }// </editor-fold>//GEN-END:initComponents
@@ -466,7 +466,7 @@ public class LivreMercado_View_Grafico extends javax.swing.JFrame implements Liv
         setVisible(true);
     }
 
-    private final LivreMercado model;
+    private final OurMarket model;
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTree arvoreCategorias;

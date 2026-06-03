@@ -100,7 +100,7 @@
   </NonVisualComponents>
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="3"/>
-    <Property name="title" type="java.lang.String" value="LivreMercado"/>
+    <Property name="title" type="java.lang.String" value="OurMarket"/>
   </Properties>
   <AccessibilityProperties>
     <Property name="AccessibleContext.accessibleName" type="java.lang.String" value="framePrincipal"/>
@@ -198,7 +198,7 @@
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Liberation Sans" size="24" style="0"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="LivreMercado Topbar"/>
+                <Property name="text" type="java.lang.String" value="OurMarket Topbar"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel1">

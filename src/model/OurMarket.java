@@ -18,7 +18,7 @@ import model.contaBancaria.ContaBancaria;
 import model.contaBancaria.FormaDePagamento;
 import model.contaBancaria.Pix;
 
-public class LivreMercado {
+public class OurMarket {
     
     private final List<Cliente> clientes;
     private ContaBancaria contaMercado;
@@ -29,7 +29,7 @@ public class LivreMercado {
     // Cliente atualmente autenticado na sessão
     private Cliente clienteLogado;
 
-    public LivreMercado() {
+    public OurMarket() {
         initOrLoad();
     }
 

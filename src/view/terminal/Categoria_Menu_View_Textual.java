@@ -1,7 +1,7 @@
 package view.terminal;
 
 import java.util.Scanner;
-import model.LivreMercado;
+import model.OurMarket;
 import model.categoria_produto.Categoria;
 import model.categoria_produto.Categoria_if;
 import view.Menu_if;
@@ -11,14 +11,14 @@ import view.Menu_if;
  */
 public class Categoria_Menu_View_Textual implements Menu_if {
 
-    private final LivreMercado model;
+    private final OurMarket model;
     private final Scanner scanner;
 
-    public Categoria_Menu_View_Textual(LivreMercado model) {
+    public Categoria_Menu_View_Textual(OurMarket model) {
         this(model, new Scanner(System.in));
     }
 
-    public Categoria_Menu_View_Textual(LivreMercado model, Scanner scanner) {
+    public Categoria_Menu_View_Textual(OurMarket model, Scanner scanner) {
         this.model = model;
         this.scanner = scanner;
     }

@@ -1,9 +1,9 @@
 
 import model.Fabrica;
-import model.LivreMercado;
+import model.OurMarket;
 import model.fabrica.Fabrica_Grafica;
 import model.fabrica.Fabrica_Textual;
-import view.LivreMercado_View;
+import view.OurMarket_View;
 
 
 public class Main {
@@ -21,8 +21,8 @@ public class Main {
                 }
             }
         }
-        LivreMercado mercado = new LivreMercado();
-        LivreMercado_View frontEnd = Fabrica.GetViewFabricaConcreta().new_LivreMercado_View(mercado);
+        OurMarket mercado = new OurMarket();
+        OurMarket_View frontEnd = Fabrica.GetViewFabricaConcreta().new_OurMarket_View(mercado);
         frontEnd.mostre();
     }   
 }

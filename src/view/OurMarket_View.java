@@ -1,11 +1,11 @@
 package view;
 
-import model.LivreMercado;
+import model.OurMarket;
 
 /**
  *
  * @author joshua.cruz
  */
-public interface LivreMercado_View {
+public interface OurMarket_View {
     void mostre(); 
 }

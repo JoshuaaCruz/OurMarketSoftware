@@ -5,7 +5,7 @@
 package model.fabrica;
 
 import model.Fabrica;
-import model.LivreMercado;
+import model.OurMarket;
 import model.autenticador.Autenticador_if;
 import model.autenticador.Credencial_if;
 import model.cliente.Cliente;
@@ -13,11 +13,11 @@ import model.cliente.Cliente_if;
 import view.Autenticador_View;
 import view.Cliente_View;
 import view.Credencial_View;
-import view.LivreMercado_View;
+import view.OurMarket_View;
 import view.Menu_if;
 import view.gui.Autenticador_View_Grafico;
 import view.gui.CredencialLoginSenha_View_Grafico;
-import view.gui.LivreMercado_View_Grafico;
+import view.gui.OurMarket_View_Grafico;
 import view.gui.buildClientViewGrafico;
 
 /**
@@ -40,8 +40,8 @@ public class Fabrica_Grafica extends Fabrica {
     }
 
     @Override
-    public LivreMercado_View new_LivreMercado_View(LivreMercado model) {
-        return new LivreMercado_View_Grafico(model);
+    public OurMarket_View new_OurMarket_View(OurMarket model) {
+        return new OurMarket_View_Grafico(model);
     }
 
 
@@ -60,7 +60,7 @@ public class Fabrica_Grafica extends Fabrica {
     }
 
     @Override
-    public Menu_if new_Menu_View(String menuType, LivreMercado model) {
+    public Menu_if new_Menu_View(String menuType, OurMarket model) {
         // GUI menu implementations not yet available
         throw new UnsupportedOperationException("GUI menus not yet implemented for menuType: " + menuType);
     }
