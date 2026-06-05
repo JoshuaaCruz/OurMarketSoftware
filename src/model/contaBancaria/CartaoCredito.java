@@ -29,4 +29,10 @@ public class CartaoCredito implements FormaDePagamento {
         return true;
     }
 
+    @Override
+    public boolean podePagar(ContaBancaria origem, double valor) {
+        if (origem == null || valor <= 0) return false;
+        return (origem.getFatura() + valor <= origem.getLimiteFatura());
+    }
+
 }

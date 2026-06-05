@@ -19,5 +19,11 @@ public class Pix implements FormaDePagamento {
         destino.depositar(valor);
         return true;
     }
+
+    @Override
+    public boolean podePagar(ContaBancaria origem, double valor) {
+        if (origem == null || valor <= 0) return false;
+        return origem.getSaldoConta() >= valor;
+    }
     
 }

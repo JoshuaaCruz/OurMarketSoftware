@@ -4,8 +4,12 @@ import java.util.List;
 import java.util.Scanner;
 import model.OurMarket;
 import model.categoria_produto.ColecaoProdutos;
+import model.categoria_produto.ItemProduto;
 import model.categoria_produto.Produto;
 import model.cliente.Cliente;
+import model.cliente.Endereco;
+import model.contaBancaria.ContaBancaria;
+import model.contaBancaria.FormaDePagamento;
 import view.Menu_if;
 
 
@@ -39,13 +43,14 @@ public class Produtos_Menu_View_Textual implements Menu_if {
     private void escolherColecao(Cliente cliente) {
         int opcao = -1;
 
-        while (opcao != 1 && opcao != 2 && opcao != 3 && opcao != 0) {
+        while (opcao != 1 && opcao != 2 && opcao != 3 && opcao != 4 && opcao != 0) {
             System.out.println("\n===========================");
             System.out.println("  ESCOLHA A COLEÇÃO");
             System.out.println("===========================");
             System.out.println("1. Estoque");
             System.out.println("2. Carrinho");
             System.out.println("3. Lista de Desejos");
+            System.out.println("4. Historico de Compras");
             System.out.println("0. Voltar");
             System.out.print("Escolha uma opção: ");
 
@@ -61,6 +66,9 @@ public class Produtos_Menu_View_Textual implements Menu_if {
                     break;
                 case 3:
                     menuListaDesejos(cliente);
+                    break;
+                case 4:
+                    verHistoricoCompras(cliente);
                     break;
                 case 0:
                     System.out.println("\nVoltando...");
@@ -86,6 +94,9 @@ public class Produtos_Menu_View_Textual implements Menu_if {
             System.out.println("4. Remover Produto");
             System.out.println("5. Ver Nota do Produto e Vendedor");
             System.out.println("6. Gerenciar Lista de Desejos");
+            if (colecao == model.getClienteLogado().getCarrinho()) {
+                System.out.println("7. Finalizar Compra");
+            }
             System.out.println("0. Voltar");
             System.out.print("Escolha uma operação: ");
 
@@ -114,6 +125,13 @@ public class Produtos_Menu_View_Textual implements Menu_if {
                     break;
                 case 6:
                     menuListaDesejos(cliente);
+                    break;
+                case 7:
+                    if (colecao == model.getClienteLogado().getCarrinho()) {
+                        finalizarCompra(cliente);
+                    } else {
+                        System.out.println("\nOpção inválida! Por favor, escolha um número do menu.");
+                    }
                     break;
                 case 0:
                     System.out.println("\nVoltando ao menu anterior...");
@@ -280,8 +298,24 @@ public class Produtos_Menu_View_Textual implements Menu_if {
         Produto produto = escolherProdutoDeVendedor(cliente);
         if (produto == null) return;
 
-        cliente.getCarrinho().adicionarProduto(produto);
-        System.out.println("\n Produto '" + produto.getNome() + "' adicionado ao Carrinho com sucesso!");
+        System.out.print("Quantidade: ");
+        int quantidade = scanner.nextInt();
+        scanner.nextLine();
+
+        if (quantidade <= 0) {
+            System.out.println(" Quantidade inválida.");
+            return;
+        }
+
+        Cliente vendedor = produto.getVendedor();
+        int estoqueDisponivel = vendedor.getEstoque().getQuantidade(produto);
+        if (quantidade > estoqueDisponivel) {
+            System.out.println(" Erro: O vendedor só possui " + estoqueDisponivel + " unidades em estoque.");
+            return;
+        }
+
+        cliente.getCarrinho().adicionarProduto(produto, quantidade);
+        System.out.println("\n " + quantidade + "x '" + produto.getNome() + "' adicionado ao Carrinho com sucesso!");
     }
 
 
@@ -352,6 +386,15 @@ public class Produtos_Menu_View_Textual implements Menu_if {
         double preco = scanner.nextDouble();
         scanner.nextLine();
 
+        System.out.print("Quantidade em estoque: ");
+        int quantidade = scanner.nextInt();
+        scanner.nextLine();
+
+        if (quantidade <= 0) {
+            System.out.println(" Quantidade inválida.");
+            return;
+        }
+
         System.out.print("Nota do produto (0-5): ");
         double nota = scanner.nextDouble();
         scanner.nextLine();
@@ -359,28 +402,30 @@ public class Produtos_Menu_View_Textual implements Menu_if {
         Produto novoProduto = new Produto(nome, descricao, preco);
         novoProduto.setNota(nota);
         novoProduto.setVendedor(model.getClienteLogado());
-        colecao.adicionarProduto(novoProduto);
+        colecao.adicionarProduto(novoProduto, quantidade);
 
-        System.out.println("\n Produto '" + nome + "' adicionado ao seu Estoque com sucesso!");
+        System.out.println("\n " + quantidade + "x '" + nome + "' adicionado ao seu Estoque com sucesso!");
     }
 
     private void verProdutos(ColecaoProdutos colecao, String nomeColecao) {
         System.out.println("\n--- PRODUTOS NO " + nomeColecao.toUpperCase() + " ---");
 
-        List<Produto> produtos = colecao.getProdutos();
-        if (produtos.isEmpty()) {
+        List<ItemProduto> itens = colecao.getItens();
+        if (itens.isEmpty()) {
             System.out.println(" Nenhum produto encontrado no " + nomeColecao + ".");
             return;
         }
 
-        System.out.println("\nTotal de produtos: " + produtos.size());
+        System.out.println("\nTotal de itens diferentes: " + itens.size());
         System.out.println("-------------------------------------------------");
 
-        for (int i = 0; i < produtos.size(); i++) {
-            Produto p = produtos.get(i);
-            System.out.println("\n[" + (i + 1) + "] " + p.getNome());
+        for (int i = 0; i < itens.size(); i++) {
+            ItemProduto item = itens.get(i);
+            Produto p = item.getProduto();
+            System.out.println("\n[" + (i + 1) + "] " + item.getQuantidadeProduto() + "x " + p.getNome());
             System.out.println("    Descrição: " + p.getDescricao());
-            System.out.println("    Preço: R$ " + String.format("%.2f", p.getPrecoBase()));
+            System.out.println("    Preço unitário: R$ " + String.format("%.2f", p.getPrecoBase()));
+            System.out.println("    Subtotal: R$ " + String.format("%.2f", p.getPrecoBase() * item.getQuantidadeProduto()));
             if (p.getCategoria() != null) {
                 System.out.println("    Categoria: " + p.getCategoria().getNome());
             }
@@ -473,15 +518,15 @@ public class Produtos_Menu_View_Textual implements Menu_if {
     private void removerProduto(ColecaoProdutos colecao, String nomeColecao) {
         System.out.println("\n--- REMOVER PRODUTO ---");
 
-        List<Produto> produtos = colecao.getProdutos();
-        if (produtos.isEmpty()) {
+        List<ItemProduto> itens = colecao.getItens();
+        if (itens.isEmpty()) {
             System.out.println(" Nenhum produto disponível para remover.");
             return;
         }
 
         System.out.println("\nProdutos disponíveis:");
-        for (int i = 0; i < produtos.size(); i++) {
-            System.out.println((i + 1) + ". " + produtos.get(i).getNome());
+        for (int i = 0; i < itens.size(); i++) {
+            System.out.println((i + 1) + ". " + itens.get(i).getQuantidadeProduto() + "x " + itens.get(i).getProduto().getNome());
         }
 
         System.out.print("\nEscolha o número do produto a remover (0 para cancelar): ");
@@ -493,17 +538,32 @@ public class Produtos_Menu_View_Textual implements Menu_if {
             return;
         }
 
-        if (escolha < 1 || escolha > produtos.size()) {
+        if (escolha < 1 || escolha > itens.size()) {
             System.out.println(" Erro: Número inválido.");
             return;
         }
 
-        Produto produto = produtos.get(escolha - 1);
+        ItemProduto item = itens.get(escolha - 1);
+        Produto produto = item.getProduto();
         String nomeProduto = produto.getNome();
+        int maxQtd = item.getQuantidadeProduto();
 
-        colecao.removerProduto(produto);
+        System.out.print("Quantidade a remover (máximo " + maxQtd + ", 0 para cancelar): ");
+        int qtdRemover = scanner.nextInt();
+        scanner.nextLine();
 
-        System.out.println("\n Produto '" + nomeProduto + "' removido do " + nomeColecao + " com sucesso!");
+        if (qtdRemover <= 0) {
+            System.out.println("Operação cancelada.");
+            return;
+        }
+        if (qtdRemover > maxQtd) {
+            System.out.println(" Erro: Você só possui " + maxQtd + " unidades.");
+            return;
+        }
+
+        colecao.removerProduto(produto, qtdRemover);
+
+        System.out.println("\n " + qtdRemover + "x '" + nomeProduto + "' removido do " + nomeColecao + " com sucesso!");
 
         if (colecao == model.getClienteLogado().getCarrinho()) {
             System.out.println("Deseja apagar o produto do sistema (retirar do estoque do vendedor)? (S/N)");
@@ -513,8 +573,8 @@ public class Produtos_Menu_View_Textual implements Menu_if {
                 Cliente vendedor = produto.getVendedor();
 
                 if (vendedor != null) {
-                    vendedor.getEstoque().removerProduto(produto);
-                    System.out.println(" Produto completamente apagado do sistema (removido do estoque do vendedor '" + vendedor.getName() + "').");
+                    vendedor.getEstoque().removerProduto(produto, qtdRemover);
+                    System.out.println(" Produto removido do estoque do vendedor '" + vendedor.getName() + "'.");
                 } else {
                     System.out.println(" Aviso: Não foi possível apagar do sistema pois o produto não possui um vendedor associado.");
                 }
@@ -529,26 +589,26 @@ public class Produtos_Menu_View_Textual implements Menu_if {
 
         List<Produto> produtos = colecao.getProdutos();
         if (produtos.isEmpty()) {
-            System.out.println(" Nenhum produto disponível.");
+            System.out.println(" Nenhum produto disponivel.");
             return;
         }
 
-        System.out.println("\nProdutos disponíveis:");
+        System.out.println("\nProdutos disponiveis:");
         for (int i = 0; i < produtos.size(); i++) {
             System.out.println((i + 1) + ". " + produtos.get(i).getNome());
         }
 
-        System.out.print("\nEscolha o número do produto (0 para cancelar): ");
+        System.out.print("\nEscolha o numero do produto (0 para cancelar): ");
         int escolha = scanner.nextInt();
         scanner.nextLine();
 
         if (escolha == 0) {
-            System.out.println("Operação cancelada.");
+            System.out.println("Operacao cancelada.");
             return;
         }
 
         if (escolha < 1 || escolha > produtos.size()) {
-            System.out.println(" Erro: Número inválido.");
+            System.out.println(" Erro: Numero invalido.");
             return;
         }
 
@@ -560,18 +620,123 @@ public class Produtos_Menu_View_Textual implements Menu_if {
 
         Cliente vendedor = produto.getVendedor();
         if (vendedor == null) {
-            System.out.println("\nProduto não possui vendedor associado.");
+            System.out.println("\nProduto nao possui vendedor associado.");
             return;
         }
 
-        System.out.println("\n--- INFORMAÇÕES DO VENDEDOR ---");
+        System.out.println("\n--- INFORMACOES DO VENDEDOR ---");
         System.out.println("Nome: " + vendedor.getName());
         System.out.println("CPF: " + vendedor.getCPF());
 
         if (vendedor.getQuantidadeProdutosVendidos() < 5) {
-            System.out.println("Aviso: Vendedor tem poucos (<5) produtos vendidos. Nota pode ser instável.");
+            System.out.println("Aviso: Vendedor tem poucos (<5) produtos vendidos. Nota pode ser instavel.");
         }
         System.out.println("Nota do Vendedor: " + String.format("%.1f", vendedor.getNota()));
         System.out.println("Quantidade de produtos vendidos: " + vendedor.getQuantidadeProdutosVendidos());
+    }
+
+    private void verHistoricoCompras(Cliente cliente) {
+        System.out.println("\n--- HISTORICO DE COMPRAS ---");
+
+        List<ItemProduto> historico = cliente.getPedidosComprados();
+        if (historico.isEmpty()) {
+            System.out.println(" Voce ainda não realizou nenhuma compra.");
+            return;
+        }
+
+        System.out.println("\nTotal de itens comprados: " + historico.size());
+        System.out.println("-------------------------------------------------");
+
+        for (int i = 0; i < historico.size(); i++) {
+            ItemProduto item = historico.get(i);
+            Produto p = item.getProduto();
+            int qtd = item.getQuantidadeProduto();
+            double subtotal = p.getPrecoBase() * qtd;
+
+            System.out.println("\n[" + (i + 1) + "] " + p.getNome());
+            System.out.println("    Descricao: " + p.getDescricao());
+            System.out.println("    Preco unitario: R$ " + String.format("%.2f", p.getPrecoBase()));
+            System.out.println("    Quantidade: " + qtd);
+            System.out.println("    Subtotal:   R$ " + String.format("%.2f", subtotal));
+            System.out.println("    Vendedor: " + p.getVendedor().getName());
+            
+        }
+    }
+
+    private void finalizarCompra(Cliente cliente) {
+        System.out.println("\n--- FINALIZAR COMPRA ---");
+
+        List<ItemProduto> carrinho = cliente.getCarrinho().getItens();
+        if (carrinho.isEmpty()) {
+            System.out.println(" O seu carrinho está vazio.");
+            return;
+        }
+
+        double totalGasto = 0;
+        System.out.println("\nResumo do Pedido:");
+        for (ItemProduto item : carrinho) {
+            Produto p = item.getProduto();
+            int qtd = item.getQuantidadeProduto();
+            double sub = p.getPrecoBase() * qtd;
+            totalGasto += sub;
+            System.out.printf("- %dx %s (R$ %.2f) = R$ %.2f\n", qtd, p.getNome(), p.getPrecoBase(), sub);
+        }
+        System.out.printf("Total a pagar: R$ %.2f\n", totalGasto);
+
+        List<Endereco> enderecos = cliente.getEnderecos();
+        if (enderecos.isEmpty()) {
+            System.out.println("\n Você não possui nenhum endereço cadastrado para entrega.");
+            System.out.println(" Por favor, vá ao menu principal (Gerenciar Endereços) e cadastre um endereço primeiro.");
+            return;
+        }
+
+        System.out.println("\nSelecione o Endereço de Entrega:");
+        for (int i = 0; i < enderecos.size(); i++) {
+            System.out.println((i + 1) + ". " + enderecos.get(i).toString());
+        }
+        System.out.print("Escolha o número do endereço (0 para cancelar): ");
+        int endEscolha = scanner.nextInt();
+        scanner.nextLine();
+        if (endEscolha <= 0 || endEscolha > enderecos.size()) {
+            System.out.println(" Operação cancelada.");
+            return;
+        }
+        Endereco enderecoEscolhido = enderecos.get(endEscolha - 1);
+
+        ContaBancaria conta = cliente.getContaCliente();
+        if (conta == null) {
+            System.out.println("\n Erro: Você não possui uma conta bancária vinculada.");
+            return;
+        }
+        
+        List<FormaDePagamento> formas = conta.getFormasPagamento();
+        if (formas.isEmpty()) {
+            System.out.println("\n Você não possui nenhuma forma de pagamento cadastrada.");
+            return;
+        }
+
+        System.out.println("\nSelecione a Forma de Pagamento:");
+        for (int i = 0; i < formas.size(); i++) {
+            System.out.println((i + 1) + ". " + formas.get(i).getNome() + " (" + formas.get(i).getDescricao(conta) + ")");
+        }
+        System.out.print("Escolha o número (0 para cancelar): ");
+        int pagEscolha = scanner.nextInt();
+        scanner.nextLine();
+        if (pagEscolha <= 0 || pagEscolha > formas.size()) {
+            System.out.println(" Operação cancelada.");
+            return;
+        }
+        FormaDePagamento formaEscolhida = formas.get(pagEscolha - 1);
+
+        System.out.println("\nProcessando compra...");
+        String resultado = model.processarCompra(cliente, formaEscolhida);
+        
+        if (resultado.equals("Sucesso")) {
+            System.out.println("\n Compra de R$ " + String.format("%.2f", totalGasto) + " realizada com sucesso!");
+            System.out.println(" O pedido será entregue em: " + enderecoEscolhido.toString());
+        } else {
+            System.out.println("\n A compra falhou.");
+            System.out.println(resultado);
+        }
     }
 }

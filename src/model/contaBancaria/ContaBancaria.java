@@ -115,6 +115,11 @@ public class ContaBancaria {
         return formaDePagamentoSelec.pagar(this, destino, valor);
     }
 
+    public boolean podePagar(double valor) {
+        if (formaDePagamentoSelec == null) return false;
+        return formaDePagamentoSelec.podePagar(this, valor);
+    }
+
     public boolean adicionarFormaPagamento(FormaDePagamento forma) {
         if (forma != null && !temFormaPagamento(forma.getNome())) {
             formasPagamento.add(forma);

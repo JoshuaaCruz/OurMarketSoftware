@@ -3,6 +3,7 @@ package model.cliente;
 import java.util.ArrayList;
 import java.util.List;
 import model.categoria_produto.ColecaoProdutos;
+import model.categoria_produto.ItemProduto;
 import model.categoria_produto.Produto;
 import model.contaBancaria.ContaBancaria;
 
@@ -14,7 +15,8 @@ public class Cliente implements Cliente_if{
     private ColecaoProdutos estoque, carrinho;
     private double nota;
     private List<Produto> listaDesejos;
-    private List<Produto> produtosVendidos;
+    private List<ItemProduto> produtosVendidos;
+    private List<ItemProduto> pedidosComprados;
 
     public Cliente() {
         this.estoque = new ColecaoProdutos();
@@ -22,6 +24,7 @@ public class Cliente implements Cliente_if{
         this.listaDesejos = new ArrayList<>();
         this.produtosVendidos = new ArrayList<>();
         this.enderecos = new ArrayList<>();
+        this.pedidosComprados = new ArrayList<>();
     }
 
     @Override
@@ -63,7 +66,6 @@ public class Cliente implements Cliente_if{
         return enderecos;
     }
 
-
     public void addEndereco(Endereco endereco) {
         if (endereco != null) {
             enderecos.add(endereco);
@@ -83,11 +85,9 @@ public class Cliente implements Cliente_if{
         this.contaCliente = contaCliente;
     }
 
-
     public ColecaoProdutos getEstoque() {
         return estoque;
     }
-
 
     public ColecaoProdutos getCarrinho() {
         return carrinho;
@@ -110,6 +110,16 @@ public class Cliente implements Cliente_if{
         this.nota = somaNotas / colecao.getProdutos().size();
     }
 
+    public void addProdutoVendido(ItemProduto produto){
+        for(ItemProduto item : produtosVendidos){
+            if(item.getProduto().equals(produto.getProduto())){
+                item.setQuantidadeProduto(item.getQuantidadeProduto() + produto.getQuantidadeProduto());
+                return;
+            }
+        }
+        produtosVendidos.add(produto);
+    }
+
     public int getQuantidadeProdutosVendidos() {
         return produtosVendidos.size();
     }
@@ -130,5 +140,15 @@ public class Cliente implements Cliente_if{
 
     public void removeProdutoListaDesejo(Produto produto){
             this.listaDesejos.remove(produto);
+    }
+
+    public List<ItemProduto> getPedidosComprados() {
+        return pedidosComprados;
+    }
+
+    public void addPedidoComprado(ItemProduto item) {
+        if (item != null) {
+            pedidosComprados.add(item);
+        }
     }
 }

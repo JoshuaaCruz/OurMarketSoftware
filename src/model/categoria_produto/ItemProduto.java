@@ -13,6 +13,11 @@ public class ItemProduto {
     private Produto produto;
     private int quantidadeProduto;
 
+    public ItemProduto(Produto produto, int quantidadeProduto) {
+        this.produto = produto;
+        this.quantidadeProduto = quantidadeProduto;
+    }
+
     /**
      * @return the produto
      */
