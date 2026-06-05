@@ -1,5 +1,6 @@
 package view.terminal;
 
+import java.util.List;
 import java.util.Scanner;
 import model.OurMarket;
 import model.cliente.Cliente;
@@ -48,6 +49,7 @@ public class OurMarket_View_Textual implements OurMarket_View {
             System.out.println("9. Ver / Pagar Fatura do Cartão");
             System.out.println("10. Gerenciar Produtos");
             System.out.println("11. Gerenciar Categorias");
+            System.out.println("12. Gerenciar Endereços");
             System.out.println("0. Sair");
             System.out.print("Escolha uma operação: ");
 
@@ -88,6 +90,9 @@ public class OurMarket_View_Textual implements OurMarket_View {
                 case 11:
                     gerenciarCategorias();
                     break;
+                case 12:
+                    gerenciarEnderecos();
+                    break;
                 case 0:
                     System.out.println("\nEncerrando o sistema...");
                     break;
@@ -115,18 +120,8 @@ public class OurMarket_View_Textual implements OurMarket_View {
         cliente.setSenha(senha);
 
         System.out.println("\n--- 3. ENDEREÇO ---");
-        System.out.print("Estado (UF): ");
-        String uf = scanner.nextLine();
-        System.out.print("Cidade: ");
-        String cidade = scanner.nextLine();
-        System.out.print("Rua: ");
-        String rua = scanner.nextLine();
-        System.out.print("Número: ");
-        int numero = scanner.nextInt();
-        scanner.nextLine();
-        System.out.print("Complemento (Apto, Casa, etc): ");
-        String complemento = scanner.nextLine();
-        cliente.setEndereco(new Endereco(uf, cidade, rua, numero, complemento));
+        Endereco_Menu_View_Textual endMenu = new Endereco_Menu_View_Textual(cliente, scanner);
+        cliente.addEndereco(endMenu.coletarCampos());
 
         System.out.println("\n--- 4. DADOS DA CONTA ---");
         ContaBancaria conta = new ContaBancaria();
@@ -152,11 +147,15 @@ public class OurMarket_View_Textual implements OurMarket_View {
         System.out.println("\n--- Dados do Cliente ---");
         System.out.println("Cliente: " + cliente.getName());
         System.out.println("CPF: " + cliente.getCPF());
-        if (cliente.getEndereco() != null) {
-            Endereco endereco = cliente.getEndereco();
-            System.out.println("Endereço: " + endereco.getLogradouro() + ", " + endereco.getNumero()
-                + " " + endereco.getComplemento() + " - " + endereco.getCidade() + "/" + endereco.getEstado());
+
+        List<Endereco> enderecos = cliente.getEnderecos();
+        if (!enderecos.isEmpty()) {
+            System.out.println("Endereços:");
+            for (int i = 0; i < enderecos.size(); i++) {
+                System.out.println("  " + (i + 1) + ". " + enderecos.get(i));
+            }
         }
+
         if (cliente.getContaCliente() != null) {
             System.out.println("Conta nº: " + cliente.getContaCliente().getNumero());
         }
@@ -273,6 +272,15 @@ public class OurMarket_View_Textual implements OurMarket_View {
         } else {
             System.out.println("\n Senha incorreta. Acesso negado, voltando ao menu principal...");
         }
+    }
+
+    private void gerenciarEnderecos() {
+        Cliente cliente = getClienteLogado();
+        if (cliente == null){ 
+            return;
+        }
+        Menu_if menuEnderecos = new Endereco_Menu_View_Textual(cliente, scanner);
+        menuEnderecos.mostre();
     }
 
     private void fazerLogin() {

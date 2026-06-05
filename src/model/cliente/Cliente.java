@@ -9,7 +9,7 @@ import model.contaBancaria.ContaBancaria;
 
 public class Cliente implements Cliente_if{
     private String nome, CPF, login, senha;
-    private Endereco endereco;
+    private List<Endereco> enderecos;
     private ContaBancaria contaCliente;
     private ColecaoProdutos estoque, carrinho;
     private double nota;
@@ -21,6 +21,7 @@ public class Cliente implements Cliente_if{
         this.carrinho = new ColecaoProdutos();
         this.listaDesejos = new ArrayList<>();
         this.produtosVendidos = new ArrayList<>();
+        this.enderecos = new ArrayList<>();
     }
 
     @Override
@@ -32,9 +33,7 @@ public class Cliente implements Cliente_if{
         return CPF;
     }
 
-    /**
-     * @param nome the nome to set
-     */
+
     public void setNome(String nome) {
         this.nome = nome;
     }
@@ -59,20 +58,23 @@ public class Cliente implements Cliente_if{
         this.CPF = CPF;
     }
 
-    /**
-     * @return the endereco
-     */
-    public Endereco getEndereco() {
-        return endereco;
+
+    public List<Endereco> getEnderecos() {
+        return enderecos;
     }
 
-    public void setEndereco(Endereco endereco) {
-        this.endereco = endereco;
+
+    public void addEndereco(Endereco endereco) {
+        if (endereco != null) {
+            enderecos.add(endereco);
+        }
     }
 
-    /**
-     * @return the ContaBancaria
-     */
+    public boolean removeEndereco(Endereco endereco) {
+        if (enderecos.size() <= 1) return false;
+        return enderecos.remove(endereco);
+    }
+
     public ContaBancaria getContaCliente() {
         return contaCliente;
     }
@@ -81,16 +83,12 @@ public class Cliente implements Cliente_if{
         this.contaCliente = contaCliente;
     }
 
-    /**
-     * @return the estoque
-     */
+
     public ColecaoProdutos getEstoque() {
         return estoque;
     }
 
-    /**
-     * @return the carrinho
-     */
+
     public ColecaoProdutos getCarrinho() {
         return carrinho;
     }
