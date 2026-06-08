@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package view.gui;
 
 import java.awt.Frame;
@@ -14,10 +10,6 @@ import model.cliente.Cliente;
 import view.Cliente_View;
 import model.cliente.Cliente_if;
 
-/**
- *
- * @author joshua.cruz
- */
 public class buildClientViewGrafico extends javax.swing.JFrame implements Cliente_View{
 
     /**

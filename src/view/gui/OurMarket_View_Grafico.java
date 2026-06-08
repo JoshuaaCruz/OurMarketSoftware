@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package view.gui;
 
 import java.awt.Component;
@@ -24,10 +20,6 @@ import view.Cliente_View;
 
 import view.OurMarket_View;
 
-/**
- *
- * @author joshua.cruz
- */
 public class OurMarket_View_Grafico extends javax.swing.JFrame implements OurMarket_View {
 
     /**

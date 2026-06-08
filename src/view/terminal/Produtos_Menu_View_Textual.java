@@ -46,7 +46,7 @@ public class Produtos_Menu_View_Textual implements Menu_if {
     private void escolherColecao(Cliente cliente) {
         int opcao = -1;
 
-        while (opcao != 1 && opcao != 2 && opcao != 3 && opcao != 4 && opcao != 0) {
+        while (opcao != 0) {
             System.out.println("\n===========================");
             System.out.println("  ESCOLHA A COLEÇÃO");
             System.out.println("===========================");
@@ -77,8 +77,7 @@ public class Produtos_Menu_View_Textual implements Menu_if {
                     System.out.println("\nVoltando...");
                     break;
                 default:
-                    System.out.println("\nOpção inválida! Por favor, escolha 1, 2, 3 ou 0.");
-                    opcao = -1;
+                    System.out.println("\nOpção inválida! Por favor, escolha 1, 2, 3, 4 ou 0.");
                     break;
             }
         }

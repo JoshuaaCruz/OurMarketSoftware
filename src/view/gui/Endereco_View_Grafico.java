@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JDialog.java to edit this template
- */
 package view.gui;
 
 import java.util.ArrayList;
@@ -13,10 +9,6 @@ import javax.swing.DefaultListModel;
 import javax.swing.ListModel;
 import javax.swing.event.ListDataListener;
 
-/**
- *
- * @author joshua.cruz
- */
 public class Endereco_View_Grafico extends javax.swing.JDialog /* implements Enderco_View */ {
 
     /**
