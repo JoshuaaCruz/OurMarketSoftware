@@ -1,7 +1,10 @@
 package model.cliente;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import model.categoria_produto.ColecaoProdutos;
 import model.categoria_produto.ItemProduto;
 import model.categoria_produto.Produto;
@@ -10,6 +13,7 @@ import model.contaBancaria.ContaBancaria;
 
 public class Cliente implements Cliente_if{
     private String nome, CPF, login, senha;
+    private LocalDate dataNascimento;
     private List<Endereco> enderecos;
     private ContaBancaria contaCliente;
     private ColecaoProdutos estoque, carrinho;
@@ -17,6 +21,7 @@ public class Cliente implements Cliente_if{
     private List<Produto> listaDesejos;
     private List<ItemProduto> produtosVendidos;
     private List<ItemProduto> pedidosComprados;
+    private Set<String> cuponsUsados;
 
     public Cliente() {
         this.estoque = new ColecaoProdutos();
@@ -25,6 +30,7 @@ public class Cliente implements Cliente_if{
         this.produtosVendidos = new ArrayList<>();
         this.enderecos = new ArrayList<>();
         this.pedidosComprados = new ArrayList<>();
+        this.cuponsUsados = new HashSet<>();
     }
 
     @Override
@@ -59,6 +65,14 @@ public class Cliente implements Cliente_if{
 
     public void setCPF(String CPF) {
         this.CPF = CPF;
+    }
+
+    public LocalDate getDataNascimento() {
+        return dataNascimento;
+    }
+
+    public void setDataNascimento(LocalDate dataNascimento) {
+        this.dataNascimento = dataNascimento;
     }
 
 
@@ -149,6 +163,18 @@ public class Cliente implements Cliente_if{
     public void addPedidoComprado(ItemProduto item) {
         if (item != null) {
             pedidosComprados.add(item);
+        }
+    }
+
+
+    public boolean jaFoiUsado(String codigo) {
+        if (codigo == null) return false;
+        return cuponsUsados.contains(codigo.toUpperCase());
+    }
+
+    public void markCupomAsUsado(String codigo) {
+        if (codigo != null) {
+            cuponsUsados.add(codigo.toUpperCase());
         }
     }
 }

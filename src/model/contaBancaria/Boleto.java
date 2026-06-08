@@ -22,4 +22,11 @@ public class Boleto implements FormaDePagamento {
         destino.depositar(valor); //TODO: taxa vai para conta mercado? 
         return true;
     }
+
+    @Override
+    public boolean podePagar(ContaBancaria origem, double valor) {
+        if (origem == null || valor <= 0) return false;
+        double totalComTaxa = valor + TAXA;
+        return origem.getSaldoConta() >= totalComTaxa;
+    }
 }

@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
- */
 package model;
 
 import java.util.ArrayList;
@@ -20,7 +16,8 @@ import model.contaBancaria.FormaDePagamento;
 public class OurMarket {
     
     private final List<Cliente> clientes;
-    private ContaBancaria contaMercado;
+    private final List<Cupom> cupons;
+    private ContaBancaria contaMercado; // TODO: necessario para taxa das transacoes? ou não será considerado? 
     
     private final Autenticador_if autenticador;
     private final Categoria_if categoriaRaiz;
@@ -105,34 +102,27 @@ public class OurMarket {
         contaLoja.setNumero("12345-6");
         lojaPadrao.setContaCliente(contaLoja);
 
-        Produto p1 = new Produto("Notebook Gamer", "Intel i9, 32GB RAM, RTX 4080", 8999.99);
-        Produto p2 = new Produto("Fone Bluetooth Pro", "Cancelamento de ruído ativo, 40h de bateria", 599.90);
-        Produto p3 = new Produto("SSD 1TB NVMe", "Leitura 7000MB/s, compatível PCIe 4.0", 349.90);
+        Produto p1 = new Produto("Notebook Gamer", "Intel i9, 32GB RAM, RTX 4080", 8000);
+        Produto p2 = new Produto("Fone Bluetooth Pro", "Cancelamento de ruído ativo, 40h de bateria", 600);
+        Produto p3 = new Produto("SSD 1TB NVMe", "Leitura 7000MB/s, compatível PCIe 4.0", 300);
 
         p1.setNota(5); p1.setVendedor(lojaPadrao);
         p2.setNota(3); p2.setVendedor(lojaPadrao);
         p3.setNota(4); p3.setVendedor(lojaPadrao);
 
-        lojaPadrao.getEstoque().adicionarProduto(p1, 50);
-        lojaPadrao.getEstoque().adicionarProduto(p2, 30);
-        lojaPadrao.getEstoque().adicionarProduto(p3, 20);
+        lojaPadrao.getEstoque().adicionarProduto(p1, 1);
+        lojaPadrao.getEstoque().adicionarProduto(p2, 1);
+        lojaPadrao.getEstoque().adicionarProduto(p3, 5);
 
         clientes.add(lojaPadrao);
     }
     
-    /**
-     * @return the categoriaRaiz
-     */
-    public Categoria_if getCategoriaRaiz() {
+
+    public Categoria_if getCategoriaRaiz() { //delete?
         return categoriaRaiz;
     }
-
-    // ===== Service Methods for Product Management =====
     
-    /**
-     * Gets the shopping cart (carrinho) of the currently logged-in client
-     * @return ColecaoProdutos representing the client's cart, or null if no client is logged in
-     */
+
     public ColecaoProdutos getCarrinhoDoClienteLogado() {
         if (clienteLogado == null) {
             return null;
@@ -140,10 +130,7 @@ public class OurMarket {
         return clienteLogado.getCarrinho();
     }
 
-    /**
-     * Gets the inventory (estoque) of the currently logged-in client
-     * @return ColecaoProdutos representing the client's inventory, or null if no client is logged in
-     */
+
     public ColecaoProdutos getEstoqueDoClienteLogado() {
         if (clienteLogado == null) {
             return null;
@@ -152,25 +139,38 @@ public class OurMarket {
     }
 
 
-
-    /**
-     * Returns all registered clients.
-     */
     public List<Cliente> getClientes() {
         return Collections.unmodifiableList(clientes);
     }
 
-    /**
-     * Registers a new client in the marketplace.
-     */
+
     public void adicionarCliente(Cliente cliente) {
         if (cliente != null) {
             clientes.add(cliente);
         }
     }
 
+    /**
+     * Procura cupom pelo codigo (case-insensitive)
+     * @return o Cupom, ou null se nao encontrou
+     */
+    public Cupom buscarCupom(String codigo) {
+        if (codigo == null) return null;
+        String upper = codigo.trim().toUpperCase();
+        for (Cupom c : cupons) {
+            if (c.getCodigo().equals(upper)) return c;
+        }
+        return null;
+    }
+
+
+    public boolean cupomDisponivel(Cliente cliente, Cupom cupom) {
+        if (cliente == null || cupom == null) return false;
+        return !cliente.jaFoiUsado(cupom.getCodigo());
+    }
+
     //compra em si, utiliza metodo pagamento selecionado do comprador, atualiza listas, e retorna status
-    public String processarCompra(Cliente comprador, FormaDePagamento forma) {
+    public String processarCompra(Cliente comprador, FormaDePagamento forma, Cupom cupom) {
         if (comprador == null || forma == null) return "Erro: Dados inválidos.";
 
         List<ItemProduto> carrinho = comprador.getCarrinho().getItens();
@@ -232,9 +232,12 @@ public class OurMarket {
             vendedor.addProdutoVendido(new ItemProduto(p, qtd));
         }
 
-        // Pass 4: Empty the cart
+        // Pass 4: Empty the cart and mark cupom as used
         comprador.getCarrinho().limparColecao();
-        
+        if (cupom != null) {
+            comprador.markCupomAsUsado(cupom.getCodigo());
+        }
+
         return "Sucesso";
     }
 
@@ -242,5 +245,7 @@ public class OurMarket {
         categoriaRaiz = new Categoria("Geral");
         autenticador = Fabrica.new_Autenticador(); //autenticacao foi simplificada, avaliar para deletar model/autenticador
         clientes = new ArrayList<>();
+        cupons = new ArrayList<>();
+        cupons.add(Cupom.ANIVERSARIO);
     }
 }

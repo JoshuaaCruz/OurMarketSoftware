@@ -2,6 +2,7 @@ package view.terminal;
 
 import java.util.List;
 import java.util.Scanner;
+import model.Cupom;
 import model.OurMarket;
 import model.categoria_produto.ColecaoProdutos;
 import model.categoria_produto.ItemProduto;
@@ -90,12 +91,13 @@ public class Produtos_Menu_View_Textual implements Menu_if {
             System.out.println("===========================");
             System.out.println("1. Adicionar Produto");
             System.out.println("2. Ver Produtos");
-            System.out.println("3. Atualizar Produto");
+            if (colecao != model.getClienteLogado().getCarrinho()) {
+                System.out.println("3. Atualizar Produto");
+            }
             System.out.println("4. Remover Produto");
             System.out.println("5. Ver Nota do Produto e Vendedor");
-            System.out.println("6. Gerenciar Lista de Desejos");
             if (colecao == model.getClienteLogado().getCarrinho()) {
-                System.out.println("7. Finalizar Compra");
+                System.out.println("6. Finalizar Compra");
             }
             System.out.println("0. Voltar");
             System.out.print("Escolha uma operação: ");
@@ -124,9 +126,6 @@ public class Produtos_Menu_View_Textual implements Menu_if {
                     verNotaProdutoVendedor(colecao);
                     break;
                 case 6:
-                    menuListaDesejos(cliente);
-                    break;
-                case 7:
                     if (colecao == model.getClienteLogado().getCarrinho()) {
                         finalizarCompra(cliente);
                     } else {
@@ -441,6 +440,12 @@ public class Produtos_Menu_View_Textual implements Menu_if {
     private void atualizarProduto(ColecaoProdutos colecao) {
         System.out.println("\n--- ATUALIZAR PRODUTO ---");
 
+        //se colecao não é o estoque do user ent ele não pode atualizar
+        if (colecao == model.getClienteLogado().getCarrinho()) {
+            System.out.println(" Vocês não pode atualizar produtos do seu carrinho.");
+            return;
+        }
+
         List<Produto> produtos = colecao.getProdutos();
         if (produtos.isEmpty()) {
             System.out.println(" Nenhum produto disponível para atualizar.");
@@ -562,26 +567,7 @@ public class Produtos_Menu_View_Textual implements Menu_if {
         }
 
         colecao.removerProduto(produto, qtdRemover);
-
         System.out.println("\n " + qtdRemover + "x '" + nomeProduto + "' removido do " + nomeColecao + " com sucesso!");
-
-        if (colecao == model.getClienteLogado().getCarrinho()) {
-            System.out.println("Deseja apagar o produto do sistema (retirar do estoque do vendedor)? (S/N)");
-            String resposta = scanner.nextLine().trim().toUpperCase();
-
-            if (resposta.equals("S")) {
-                Cliente vendedor = produto.getVendedor();
-
-                if (vendedor != null) {
-                    vendedor.getEstoque().removerProduto(produto, qtdRemover);
-                    System.out.println(" Produto removido do estoque do vendedor '" + vendedor.getName() + "'.");
-                } else {
-                    System.out.println(" Aviso: Não foi possível apagar do sistema pois o produto não possui um vendedor associado.");
-                }
-            } else {
-                System.out.println(" O produto foi removido apenas do seu Carrinho.");
-            }
-        }
     }
 
     private void verNotaProdutoVendedor(ColecaoProdutos colecao) {
@@ -683,12 +669,43 @@ public class Produtos_Menu_View_Textual implements Menu_if {
         }
         System.out.printf("Total a pagar: R$ %.2f\n", totalGasto);
 
-        List<Endereco> enderecos = cliente.getEnderecos();
-        if (enderecos.isEmpty()) {
-            System.out.println("\n Você não possui nenhum endereço cadastrado para entrega.");
-            System.out.println(" Por favor, vá ao menu principal (Gerenciar Endereços) e cadastre um endereço primeiro.");
-            return;
+        // Cupom logic
+        Cupom cupom = null;
+        boolean tentarCupom = true;
+        while (tentarCupom) {
+            System.out.print("\nPossui um cupom de desconto? Digite o código (Enter para pular): ");
+            String codigoCupom = scanner.nextLine().trim();
+            
+            if (codigoCupom.isEmpty()) {
+                break;
+            }
+            
+            Cupom c = model.buscarCupom(codigoCupom);
+            if (c == null) {
+                System.out.println(" Cupom não encontrado.");
+            } else if (!model.cupomDisponivel(cliente, c)) {
+                System.out.println(" Você já utilizou o cupom '" + c.getCodigo() + "'.");
+            } else {
+                double totalComDesconto = c.aplicar(totalGasto);
+                System.out.println(" Cupom válido! " + c.getDescricao());
+                System.out.printf(" Total original:      R$ %.2f%n", totalGasto);
+                System.out.printf(" Desconto aplicado:  -R$ %.2f%n", totalGasto - totalComDesconto);
+                System.out.printf(" Total com desconto:  R$ %.2f%n", totalComDesconto);
+                
+                System.out.print(" Deseja aplicar este cupom? (S/N): ");
+                if (scanner.nextLine().trim().equalsIgnoreCase("S")) {
+                    cupom = c;
+                    break;
+                }
+            }
+            
+            System.out.print(" Deseja tentar outro cupom? (S/N): ");
+            if (!scanner.nextLine().trim().equalsIgnoreCase("S")) {
+                tentarCupom = false;
+            }
         }
+
+        List<Endereco> enderecos = cliente.getEnderecos();
 
         System.out.println("\nSelecione o Endereço de Entrega:");
         for (int i = 0; i < enderecos.size(); i++) {
@@ -728,11 +745,27 @@ public class Produtos_Menu_View_Textual implements Menu_if {
         }
         FormaDePagamento formaEscolhida = formas.get(pagEscolha - 1);
 
+        // Confirmar compra
+        System.out.println("\n--- CONFIRMAÇÃO DE COMPRA ---");
+        System.out.printf("Endereço de Entrega: %s\n", enderecoEscolhido.toString());
+        System.out.printf("Forma de Pagamento:  %s\n", formaEscolhida.getNome());
+        if (cupom != null) {
+            System.out.printf("Total a pagar:       R$ %.2f (com desconto do cupom)\n", cupom.aplicar(totalGasto));
+        } else {
+            System.out.printf("Total a pagar:       R$ %.2f\n", totalGasto);
+        }
+        
+        System.out.print("\nConfirmar compra? (S/N): ");
+        if (!scanner.nextLine().trim().equalsIgnoreCase("S")) {
+            System.out.println(" Compra cancelada pelo usuário.");
+            return;
+        }
+
         System.out.println("\nProcessando compra...");
-        String resultado = model.processarCompra(cliente, formaEscolhida);
+        String resultado = model.processarCompra(cliente, formaEscolhida, cupom);
         
         if (resultado.equals("Sucesso")) {
-            System.out.println("\n Compra de R$ " + String.format("%.2f", totalGasto) + " realizada com sucesso!");
+            System.out.println("\n Compra realizada com sucesso!");
             System.out.println(" O pedido será entregue em: " + enderecoEscolhido.toString());
         } else {
             System.out.println("\n A compra falhou.");

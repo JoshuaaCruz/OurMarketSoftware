@@ -149,7 +149,7 @@ public class Endereco_Menu_View_Textual implements Menu_if {
         int numero = scanner.nextInt();
         scanner.nextLine();
 
-        System.out.print("Complemento (Apto, Casa, etc — Enter para pular): ");
+        System.out.print("Complemento (N° do apartamento, Bloco X, etc — Enter para pular): ");
         String complemento = scanner.nextLine();
 
         System.out.print("Apelido (ex: Casa, Trabalho — Enter para pular): ");

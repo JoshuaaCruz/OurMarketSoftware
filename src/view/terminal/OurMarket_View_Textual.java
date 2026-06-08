@@ -1,7 +1,12 @@
 package view.terminal;
 
+import java.time.LocalDate;
+import java.time.MonthDay;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Scanner;
+import model.Cupom;
 import model.OurMarket;
 import model.cliente.Cliente;
 import model.cliente.Endereco;
@@ -111,6 +116,16 @@ public class OurMarket_View_Textual implements OurMarket_View {
         System.out.print("CPF: ");
         cliente.setCPF(scanner.nextLine());
 
+        System.out.print("Data de nascimento (dia/mês/ano [dd/MM/yyyy], Enter para pular): ");
+        String dataNasc = scanner.nextLine().trim();
+        if (!dataNasc.isEmpty()) {
+            try {
+                cliente.setDataNascimento(LocalDate.parse(dataNasc, DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            } catch (DateTimeParseException e) {
+                System.out.println(" Formato inválido, data de nascimento não salva.");
+            }
+        }
+
         System.out.println("\n--- 2. CREDENCIAIS DE ACESSO ---");
         System.out.print("Login: ");
         String login = scanner.nextLine();
@@ -136,6 +151,8 @@ public class OurMarket_View_Textual implements OurMarket_View {
         model.login(login, senha);
 
         System.out.println("\n Cadastro realizado com sucesso! Você já está logado como '" + cliente.getName() + "'.");
+
+        verificarAniversario(cliente);
     }
 
     private void verDadosCliente() {
@@ -283,6 +300,16 @@ public class OurMarket_View_Textual implements OurMarket_View {
         menuEnderecos.mostre();
     }
 
+    private void verificarAniversario(Cliente cliente) {
+        if (cliente.getDataNascimento() == null) return;
+        if (MonthDay.from(cliente.getDataNascimento()).equals(MonthDay.now())) {
+            System.out.println("\n \u1F382 Feliz Aniversário, " + cliente.getName() + "! \u1F382"); //TODO: unicode aniversario não funcionando = caracteres especiais ç/ã
+            System.out.println(" Como presente, use o cupom abaixo na sua próxima compra:");
+            System.out.println(" Código: " + Cupom.ANIVERSARIO.getCodigo());
+            System.out.println(" " + Cupom.ANIVERSARIO.getDescricao());
+        }
+    }
+
     private void fazerLogin() {
         if (model.getClienteLogado() != null) {
             System.out.println("\n Já existe uma sessão ativa para '" + model.getClienteLogado().getName() + "'. Faça logoff primeiro.");
@@ -298,6 +325,7 @@ public class OurMarket_View_Textual implements OurMarket_View {
         Cliente cliente = model.login(login, senha);
         if (cliente != null) {
             System.out.println("\n Bem-vindo(a), " + cliente.getName() + "!");
+            verificarAniversario(cliente);
         } else {
             System.out.println("\n Login ou senha incorretos.");
         }
