@@ -4,10 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- *
- * @author joshua.cruz
- */
 public class Categoria implements Categoria_if{
     
     private String nome, descricao;
@@ -16,10 +12,11 @@ public class Categoria implements Categoria_if{
     private final ArrayList<Produto> produtos;
     
     private boolean hasChildren; //se não, não permitir certos métodos, não sei se necessário
+    private boolean destaqueAdmin = false;
     
     {
         subcategoriasList = new ArrayList<>();
-        produtos = new ArrayList();
+        produtos = new ArrayList<Produto>();
     }
     
     
@@ -33,7 +30,7 @@ public class Categoria implements Categoria_if{
     }
 
     @Override
-    public void addCategoria(Categoria categoria) {
+    public void addSubCategoria(Categoria categoria) {
         // TODO: deve verificar se a categoria jaa existe
         
         if(!this.subcategoriasList.contains(categoria)){
@@ -58,13 +55,15 @@ public class Categoria implements Categoria_if{
         return nome;
     }
 
-    /**
-     * @return the descricao
-     */
+    @Override
     public String getDescricao() {
         return descricao;
     }
 
+    @Override
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
  
 
     /**
@@ -75,25 +74,32 @@ public class Categoria implements Categoria_if{
     }
     
     public void addProduto(Produto produto) {
-        // TODO: deve verificar se a categoria jaa existe
         
         if(!this.produtos.contains(produto)){
-        produtos.add(produto);
+            produtos.add(produto);
         }
         
     }
     
     public void removerProduto(Produto produto){
-         if(this.produtos.contains(produto)){
-        produtos.remove(produto);
+        if(this.produtos.contains(produto)){
+            produtos.remove(produto);
         }
     }
     
 
     @Override
     public void setNome(String nome) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        this.nome = nome;
     }
 
+    @Override
+    public boolean isDestaqueAdmin() {
+        return destaqueAdmin;
+    }
 
+    @Override
+    public void setDestaqueAdmin(boolean destaqueAdmin) {
+        this.destaqueAdmin = destaqueAdmin;
+    }
 }

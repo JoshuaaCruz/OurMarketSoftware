@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model.fabrica;
 
 import model.Fabrica;
@@ -14,10 +10,6 @@ import view.Menu_if;
 import view.gui.OurMarket_View_Grafico;
 import view.gui.buildClientViewGrafico;
 
-/**
- *
- * @author joshua.cruz
- */
 public class Fabrica_Grafica extends Fabrica {
 
     @Override

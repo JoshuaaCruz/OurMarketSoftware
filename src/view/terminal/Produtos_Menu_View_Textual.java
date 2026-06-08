@@ -7,6 +7,8 @@ import model.OurMarket;
 import model.categoria_produto.ColecaoProdutos;
 import model.categoria_produto.ItemProduto;
 import model.categoria_produto.Produto;
+import model.categoria_produto.Categoria;
+import model.categoria_produto.Categoria_if;
 import model.cliente.Cliente;
 import model.cliente.Endereco;
 import model.contaBancaria.ContaBancaria;
@@ -398,9 +400,19 @@ public class Produtos_Menu_View_Textual implements Menu_if {
         double nota = scanner.nextDouble();
         scanner.nextLine();
 
+        System.out.println("Escolha a categoria do produto (0 para deixar sem categoria):");
+        Categoria_Menu_View_Textual catMenu = new Categoria_Menu_View_Textual(model, scanner);
+        Categoria_if categoriaEscolhida = catMenu.escolherCategoriaNavegacao(model.getCategoriaRaiz());
+
         Produto novoProduto = new Produto(nome, descricao, preco);
         novoProduto.setNota(nota);
         novoProduto.setVendedor(model.getClienteLogado());
+
+        if (categoriaEscolhida != null) {
+            novoProduto.setCategoria((Categoria) categoriaEscolhida);
+            ((Categoria) categoriaEscolhida).addProduto(novoProduto);
+        }
+
         colecao.adicionarProduto(novoProduto, quantidade);
 
         System.out.println("\n " + quantidade + "x '" + nome + "' adicionado ao seu Estoque com sucesso!");
@@ -478,6 +490,7 @@ public class Produtos_Menu_View_Textual implements Menu_if {
         System.out.println("2. Descrição");
         System.out.println("3. Preço");
         System.out.println("4. Nota");
+        System.out.println("5. Categoria");
         System.out.println("0. Cancelar");
         System.out.print("Escolha: ");
 
@@ -510,6 +523,24 @@ public class Produtos_Menu_View_Textual implements Menu_if {
                 scanner.nextLine();
                 produto.setNota(novaNota);
                 System.out.println(" Nota atualizada com sucesso!");
+                break;
+            case 5:
+                System.out.println("Escolha a nova categoria (0 para deixar sem categoria):");
+                Categoria_Menu_View_Textual catMenu = new Categoria_Menu_View_Textual(model, scanner);
+                Categoria_if novaCategoria = catMenu.escolherCategoriaNavegacao(model.getCategoriaRaiz());
+                
+                if (produto.getCategoria() != null) {
+                    ((Categoria) produto.getCategoria()).removerProduto(produto);
+                }
+                
+                if (novaCategoria != null) {
+                    produto.setCategoria((Categoria) novaCategoria);
+                    ((Categoria) novaCategoria).addProduto(produto);
+                    System.out.println(" Categoria atualizada com sucesso para '" + novaCategoria.getNome() + "'!");
+                } else {
+                    produto.setCategoria(null);
+                    System.out.println(" Produto agora não possui categoria.");
+                }
                 break;
             case 0:
                 System.out.println("Operação cancelada.");

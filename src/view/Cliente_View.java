@@ -2,10 +2,7 @@ package view;
 
 import model.cliente.Cliente_if;
 
-/**
- *
- * @author joshua.cruz
- */
+
 public interface Cliente_View {
 //    void setClient();
 //    Cliente_if getModel();

@@ -4,10 +4,13 @@ import java.time.LocalDate;
 import java.time.MonthDay;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import model.Cupom;
 import model.OurMarket;
+import model.categoria_produto.Categoria_if;
+import model.categoria_produto.Produto;
 import model.cliente.Cliente;
 import model.cliente.Endereco;
 import model.contaBancaria.ContaBancaria;
@@ -55,6 +58,7 @@ public class OurMarket_View_Textual implements OurMarket_View {
             System.out.println("10. Gerenciar Produtos");
             System.out.println("11. Gerenciar Categorias");
             System.out.println("12. Gerenciar Endereços");
+            System.out.println("13. Ver Produtos em Destaque (Mais Vendidos)");
             System.out.println("0. Sair");
             System.out.print("Escolha uma operação: ");
 
@@ -97,6 +101,9 @@ public class OurMarket_View_Textual implements OurMarket_View {
                     break;
                 case 12:
                     gerenciarEnderecos();
+                    break;
+                case 13:
+                    verProdutosEmDestaque();
                     break;
                 case 0:
                     System.out.println("\nEncerrando o sistema...");
@@ -288,6 +295,45 @@ public class OurMarket_View_Textual implements OurMarket_View {
             menuCategorias.mostre();
         } else {
             System.out.println("\n Senha incorreta. Acesso negado, voltando ao menu principal...");
+        }
+    }
+    
+    private void verProdutosEmDestaque() {
+        System.out.println("\n--- PRODUTOS EM DESTAQUE (MAIS VENDIDOS) ---");
+        List<Categoria_if> categoriasDestaque = new ArrayList<>();
+        coletarCategoriasDestaque(model.getCategoriaRaiz(), categoriasDestaque);
+
+        if (categoriasDestaque.isEmpty()) {
+            System.out.println(" Nenhuma categoria em destaque no momento.");
+            return;
+        }
+
+        for (Categoria_if cat : categoriasDestaque) {
+            System.out.println("\n >> Categoria: " + cat.getNome() + " <<");
+            
+            List<Produto> produtos = new ArrayList<>(cat.getProdutos());
+            if (produtos.isEmpty()) {
+                System.out.println("   (Sem produtos nesta categoria)");
+                continue;
+            }
+
+            // ordenar maior -> menor em vendas
+            produtos.sort((p1, p2) -> Integer.compare(p2.getVendas(), p1.getVendas()));
+
+            int limite = Math.min(5, produtos.size()); // Mostrar Top 5
+            for (int i = 0; i < limite; i++) {
+                Produto p = produtos.get(i);
+                System.out.printf("   %d. %s (Vendas: %d) - R$ %.2f\n", i + 1, p.getNome(), p.getVendas(), p.getPrecoBase());
+            }
+        }
+    }
+
+    private void coletarCategoriasDestaque(Categoria_if cat, List<Categoria_if> lista) {
+        if (cat.isDestaqueAdmin()) {
+            lista.add(cat);
+        }
+        for (Categoria_if sub : cat.getSubcategorias()) {
+            coletarCategoriasDestaque(sub, lista);
         }
     }
 

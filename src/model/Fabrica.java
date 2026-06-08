@@ -3,10 +3,6 @@ package model;
 import model.fabrica.Fabrica_Grafica;
 import model.fabrica.Fabrica_if;
 
-/**
- *
- * @author joshua.cruz
- */
 public abstract class Fabrica implements Fabrica_if{
  
     /**

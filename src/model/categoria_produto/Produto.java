@@ -2,10 +2,6 @@ package model.categoria_produto;
 
 import model.cliente.Cliente;
 
-/**
- *
- * @author joshu
- */
 public class Produto {
     private String nome;
     private String descricao;
@@ -13,12 +9,14 @@ public class Produto {
     private Cliente vendedor;
     private Categoria categoria;
     private double nota;
+    private int vendas;
 
     public Produto(String nome, String descricao, double precoBase){
         this.nome=nome;
         this.descricao=descricao;
         this.precoBase=precoBase;
         this.nota = 0;
+        this.vendas = 0;
     }
     
     
@@ -89,5 +87,13 @@ public class Produto {
 
     public double getNota() {
         return nota;
+    }
+
+    public int getVendas() {
+        return vendas;
+    }
+
+    public void setVendas(int vendas) {
+        this.vendas = vendas;
     }
 }

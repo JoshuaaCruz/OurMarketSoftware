@@ -1,14 +1,13 @@
 package view.terminal;
 
 import java.util.Scanner;
+import java.util.List;
+import java.util.ArrayList;
 import model.OurMarket;
 import model.categoria_produto.Categoria;
 import model.categoria_produto.Categoria_if;
 import view.Menu_if;
 
-/**
- *
- */
 public class Categoria_Menu_View_Textual implements Menu_if {
 
     private final OurMarket model;
@@ -34,6 +33,7 @@ public class Categoria_Menu_View_Textual implements Menu_if {
             System.out.println("1. Listar categorias");
             System.out.println("2. Adicionar subcategoria");
             System.out.println("3. Remover subcategoria");
+            System.out.println("4. Alternar Destaque de Categoria");
             System.out.println("0. Voltar");
             System.out.print("Escolha uma opção: ");
 
@@ -50,11 +50,14 @@ public class Categoria_Menu_View_Textual implements Menu_if {
                 case 3:
                     removerSubcategoria();
                     break;
+                case 4:
+                    alternarDestaque();
+                    break;
                 case 0:
                     System.out.println("\nVoltando...");
                     break;
                 default:
-                    System.out.println("\nOpção inválida! Por favor, escolha 1, 2, 3 ou 0.");
+                    System.out.println("\nOpção inválida! Por favor, escolha 1, 2, 3, 4 ou 0.");
                     break;
             }
         }
@@ -68,7 +71,8 @@ public class Categoria_Menu_View_Textual implements Menu_if {
 
     private void listarRecursivo(Categoria_if categoria, int nivel) {
         String indent = "  ".repeat(nivel);
-        System.out.println(indent + "- " + categoria.getNome());
+        String destaqueStr = categoria.isDestaqueAdmin() ? " [DESTAQUE]" : "";
+        System.out.println(indent + "- " + categoria.getNome() + destaqueStr);
         for (Categoria_if sub : categoria.getSubcategorias()) {
             listarRecursivo(sub, nivel + 1);
         }
@@ -76,63 +80,112 @@ public class Categoria_Menu_View_Textual implements Menu_if {
 
     private void adicionarSubcategoria() {
         System.out.println("\n--- ADICIONAR SUBCATEGORIA ---");
-        listarCategorias();
+        System.out.println("Escolha a categoria PAI onde adicionar:");
+        Categoria_if pai = escolherCategoriaNavegacao(model.getCategoriaRaiz());
 
-        System.out.print("\nNome da categoria PAI onde adicionar: ");
-        String nomePai = scanner.nextLine();
-
-        Categoria_if pai = buscarCategoria(model.getCategoriaRaiz(), nomePai);
         if (pai == null) {
-            System.out.println(" Categoria pai não encontrada.");
+            System.out.println(" Operação cancelada.");
             return;
         }
 
         System.out.print("Nome da nova subcategoria: ");
         String novoNome = scanner.nextLine();
+        
+        System.out.print("Descrição da subcategoria: ");
+        String novaDescricao = scanner.nextLine();
 
-        ((Categoria) pai).addCategoria(new Categoria(novoNome));
-        System.out.println(" Subcategoria '" + novoNome + "' adicionada em '" + nomePai + "' com sucesso!");
+        Categoria novaCat = new Categoria(novoNome);
+        novaCat.setDescricao(novaDescricao);
+        
+        ((Categoria) pai).addSubCategoria(novaCat);
+        System.out.println(" Subcategoria '" + novoNome + "' adicionada em '" + pai.getNome() + "' com sucesso!");
     }
 
     private void removerSubcategoria() {
         System.out.println("\n--- REMOVER SUBCATEGORIA ---");
-        listarCategorias();
+        System.out.println("Escolha a categoria PAI da qual deseja remover uma subcategoria:");
+        Categoria_if pai = escolherCategoriaNavegacao(model.getCategoriaRaiz());
 
-        System.out.print("\nNome da categoria PAI: ");
-        String nomePai = scanner.nextLine();
-
-        Categoria_if pai = buscarCategoria(model.getCategoriaRaiz(), nomePai);
         if (pai == null) {
-            System.out.println(" Categoria pai não encontrada.");
+            System.out.println(" Operação cancelada.");
             return;
         }
 
-        System.out.print("Nome da subcategoria a remover: ");
-        String nomeRemover = scanner.nextLine();
-
-        Categoria_if alvo = null;
-        for (Categoria_if sub : pai.getSubcategorias()) {
-            if (sub.getNome().equals(nomeRemover)) {
-                alvo = sub;
-                break;
-            }
+        if (pai.getSubcategorias().isEmpty()) {
+            System.out.println(" A categoria '" + pai.getNome() + "' não possui subcategorias.");
+            return;
         }
+
+        System.out.println("\nEscolha a subcategoria a remover:");
+        Categoria_if alvo = escolherCategoriaNavegacao(pai);
 
         if (alvo == null) {
-            System.out.println(" Subcategoria não encontrada em '" + nomePai + "'.");
+            System.out.println(" Operação cancelada.");
             return;
+        }
+        
+
+        //Making sure alvo é filho de pai
+        if (!pai.getSubcategorias().contains(alvo)) {
+             System.out.println(" A categoria selecionada não é uma subcategoria direta de '" + pai.getNome() + "'.");
+             return;
         }
 
         ((Categoria) pai).removerSubcategoria((Categoria) alvo);
-        System.out.println(" Subcategoria '" + nomeRemover + "' removida com sucesso!");
+        System.out.println(" Subcategoria '" + alvo.getNome() + "' removida com sucesso!");
     }
 
-    private Categoria_if buscarCategoria(Categoria_if atual, String nome) {
-        if (atual.getNome().equals(nome)) return atual;
-        for (Categoria_if sub : atual.getSubcategorias()) {
-            Categoria_if resultado = buscarCategoria(sub, nome);
-            if (resultado != null) return resultado;
+    private void alternarDestaque() {
+        System.out.println("\n--- ALTERNAR DESTAQUE ---");
+        System.out.println("Escolha a categoria para alternar o status de destaque:");
+        Categoria_if cat = escolherCategoriaNavegacao(model.getCategoriaRaiz());
+
+        if (cat == null) {
+            System.out.println(" Operação cancelada.");
+            return;
         }
-        return null;
+
+        boolean novoStatus = !cat.isDestaqueAdmin();
+        cat.setDestaqueAdmin(novoStatus);
+        
+        if (novoStatus) {
+            System.out.println(" Categoria '" + cat.getNome() + "' agora está em DESTAQUE!");
+        } else {
+            System.out.println(" Categoria '" + cat.getNome() + "' não está mais em destaque.");
+        }
+    }
+
+    /**
+     * Helper universal para exibir categorias com números e retornar a escolhida.
+     */
+    public Categoria_if escolherCategoriaNavegacao(Categoria_if raiz) {
+        List<Categoria_if> listaCategorias = new ArrayList<>();
+        coletarTodasCategoriaseSubs(raiz, listaCategorias);
+
+        for (int i = 0; i < listaCategorias.size(); i++) {
+            Categoria_if c = listaCategorias.get(i);
+            String destaque = c.isDestaqueAdmin() ? " [DESTAQUE]" : "";
+            System.out.println("[" + (i + 1) + "] " + c.getNome() + destaque);
+        }
+        System.out.println("[0] Cancelar / Voltar");
+
+        while (true) {
+            System.out.print("Escolha o número da categoria: ");
+            int escolha = scanner.nextInt();
+            scanner.nextLine();
+
+            if (escolha == 0) return null;
+            if (escolha >= 1 && escolha <= listaCategorias.size()) {
+                return listaCategorias.get(escolha - 1);
+            }
+            System.out.println("Número inválido. Tente novamente.");
+        }
+    }
+
+    private void coletarTodasCategoriaseSubs(Categoria_if atual, List<Categoria_if> lista) {
+        lista.add(atual);
+        for (Categoria_if sub : atual.getSubcategorias()) {
+            coletarTodasCategoriaseSubs(sub, lista);
+        }
     }
 }

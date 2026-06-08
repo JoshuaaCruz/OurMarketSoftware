@@ -1,20 +1,17 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model.categoria_produto;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- * @author joshua.cruz
- */
+
 public interface Categoria_if {
-    public void addCategoria(Categoria categoria);
+    public void addSubCategoria(Categoria categoria);
     List<Categoria_if> getSubcategorias();
     String getNome();
     void setNome(String nome);
+    String getDescricao();
+    void setDescricao(String descricao);
     ArrayList<Produto> getProdutos();
+    boolean isDestaqueAdmin();
+    void setDestaqueAdmin(boolean destaque);
 }

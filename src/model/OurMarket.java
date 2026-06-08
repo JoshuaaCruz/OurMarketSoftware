@@ -64,31 +64,6 @@ public class OurMarket {
     }
 
     private void initOrLoad() {
-        // inicializa categorias
-        Categoria g1, g2;
-        categoriaRaiz.addCategoria(new Categoria("Veiculos"));
-        g1 = new Categoria("Tecnologia");
-        categoriaRaiz.addCategoria(g1);
-        categoriaRaiz.addCategoria(new Categoria("Casa e Mooveis"));
-        g1.addCategoria(new Categoria("Informatica"));
-        
-        Categoria games = new Categoria("Games");
-        g1.addCategoria(games);
-        
-        games.addProduto(new Produto("GTA", "SO MUCH FUN", 100));
-        games.addProduto(new Produto("RDR2", "SO MUCH COWBOYS", 1000));
-
-        g2 = new Categoria("Celulares e Telefones");
-        g1.addCategoria(g2);
-
-        Categoria pecasCelular = new Categoria("Peças para Celular");
-        Produto randP = new Produto("Carregador", "Carrega Iphone", 50);
-        Produto randP2 = new Produto("capinha", "Carrega Iphone", 5000);
-        
-        pecasCelular.addProduto(randP);
-        pecasCelular.addProduto(randP2);
-        g2.addCategoria(pecasCelular);
-
         // inicializa vendedor padrão do sistema para ja haver produtos cadastrados
         Cliente lojaPadrao = new Cliente();
         lojaPadrao.setNome("Loja Padrão");
@@ -97,24 +72,55 @@ public class OurMarket {
         ContaBancaria contaLoja = new ContaBancaria();
         contaLoja.setNumero("12345-6");
         lojaPadrao.setContaCliente(contaLoja);
-
-        Produto p1 = new Produto("Notebook Gamer", "Intel i9, 32GB RAM, RTX 4080", 8000);
-        Produto p2 = new Produto("Fone Bluetooth Pro", "Cancelamento de ruído ativo, 40h de bateria", 600);
-        Produto p3 = new Produto("SSD 1TB NVMe", "Leitura 7000MB/s, compatível PCIe 4.0", 300);
-
-        p1.setNota(5); p1.setVendedor(lojaPadrao);
-        p2.setNota(3); p2.setVendedor(lojaPadrao);
-        p3.setNota(4); p3.setVendedor(lojaPadrao);
-
-        lojaPadrao.getEstoque().adicionarProduto(p1, 1);
-        lojaPadrao.getEstoque().adicionarProduto(p2, 1);
-        lojaPadrao.getEstoque().adicionarProduto(p3, 5);
-
         clientes.add(lojaPadrao);
+
+        // inicializa categorias
+
+        Categoria catTech = new Categoria("Tecnologia");
+        categoriaRaiz.addSubCategoria(catTech);
+        
+        Categoria catInformatica = new Categoria("Informatica");
+        catTech.addSubCategoria(catInformatica);
+        
+        Categoria catGames = new Categoria("Games");
+        catTech.addSubCategoria(catGames);
+        
+        Categoria catCelulares = new Categoria("Celulares e Telefones");
+        catTech.addSubCategoria(catCelulares);
+
+        Categoria catPecasCelular = new Categoria("Peças para Celular");
+        catCelulares.addSubCategoria(catPecasCelular);
+
+        // Instancia produtos
+        Produto pGta = new Produto("GTA", "SO MUCH FUN", 100);
+        Produto pRdr2 = new Produto("RDR2", "SO MUCH COWBOYS", 1000);
+        Produto pCarregador = new Produto("Carregador", "Carrega Iphone", 50);
+        Produto pCapinha = new Produto("capinha", "Protege Iphone", 50);
+        Produto pNotebook = new Produto("Notebook Gamer", "Intel i9, 32GB RAM, RTX 4080", 8000);
+        Produto pFone = new Produto("Fone Bluetooth Pro", "Cancelamento de ruído ativo, 40h de bateria", 600);
+        Produto pSsd = new Produto("SSD 1TB NVMe", "Leitura 7000MB/s, compatível PCIe 4.0", 300);
+
+        // Configura vendor, nota, categoria
+        //TODO: Verificar se nota deve iniciar vazia. talvez depois do caso de uso Avaliar produto estiver pronto
+        adicionarProdutoAoSistema(pGta, lojaPadrao, 5, catGames, 10);
+        adicionarProdutoAoSistema(pRdr2, lojaPadrao, 5, catGames, 10);
+        adicionarProdutoAoSistema(pCarregador, lojaPadrao, 4, catPecasCelular, 50);
+        adicionarProdutoAoSistema(pCapinha, lojaPadrao, 3, catPecasCelular, 20);
+        adicionarProdutoAoSistema(pNotebook, lojaPadrao, 5, catInformatica, 1);
+        adicionarProdutoAoSistema(pFone, lojaPadrao, 3, catInformatica, 1);
+        adicionarProdutoAoSistema(pSsd, lojaPadrao, 4, catInformatica, 5);
+    }
+
+    private void adicionarProdutoAoSistema(Produto p, Cliente vendedor, double nota, Categoria cat, int qtd) {
+        p.setVendedor(vendedor);
+        p.setNota(nota);
+        p.setCategoria(cat);
+        cat.addProduto(p);
+        vendedor.getEstoque().adicionarProduto(p, qtd);
     }
     
 
-    public Categoria_if getCategoriaRaiz() { //delete?
+    public Categoria_if getCategoriaRaiz() {
         return categoriaRaiz;
     }
     
@@ -226,6 +232,9 @@ public class OurMarket {
 
             //Add to seller history
             vendedor.addProdutoVendido(new ItemProduto(p, qtd));
+
+            // Increment product sales counter
+            p.setVendas(p.getVendas() + qtd);
         }
 
         // Pass 4: Empty the cart and mark cupom as used
