@@ -3,7 +3,6 @@ package model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import model.autenticador.Autenticador_if;
 import model.categoria_produto.Categoria;
 import model.categoria_produto.Categoria_if;
 import model.categoria_produto.ColecaoProdutos;
@@ -19,7 +18,6 @@ public class OurMarket {
     private final List<Cupom> cupons;
     private ContaBancaria contaMercado; // TODO: necessario para taxa das transacoes? ou não será considerado? 
     
-    private final Autenticador_if autenticador;
     private final Categoria_if categoriaRaiz;
     
     // Cliente atualmente autenticado na sessão
@@ -29,9 +27,7 @@ public class OurMarket {
         initOrLoad();
     }
 
-    public Autenticador_if getAutenticador() {
-        return autenticador;
-    }
+
 
     /**
      * @return o cliente atualmente autenticado, ou null se nenhum
@@ -243,7 +239,7 @@ public class OurMarket {
 
     {
         categoriaRaiz = new Categoria("Geral");
-        autenticador = Fabrica.new_Autenticador(); //autenticacao foi simplificada, avaliar para deletar model/autenticador
+
         clientes = new ArrayList<>();
         cupons = new ArrayList<>();
         cupons.add(Cupom.ANIVERSARIO);

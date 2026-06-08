@@ -762,7 +762,7 @@ public class Produtos_Menu_View_Textual implements Menu_if {
         }
 
         System.out.println("\nProcessando compra...");
-        String resultado = model.processarCompra(cliente, formaEscolhida, cupom);
+        String resultado = model.processarCompra(cliente, formaEscolhida, cupom); //Facade
         
         if (resultado.equals("Sucesso")) {
             System.out.println("\n Compra realizada com sucesso!");

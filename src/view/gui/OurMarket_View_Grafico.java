@@ -16,13 +16,12 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import model.Fabrica;
 import model.OurMarket;
-import model.autenticador.Autenticacao;
-import model.autenticador.Credencial_if;
+
 import model.categoria_produto.Categoria_if;
 import model.categoria_produto.Produto;
 import model.fabrica.Fabrica_Grafica;
 import view.Cliente_View;
-import view.Credencial_View;
+
 import view.OurMarket_View;
 
 /**
@@ -376,12 +375,7 @@ public class OurMarket_View_Grafico extends javax.swing.JFrame implements OurMar
     }// </editor-fold>//GEN-END:initComponents
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
-        if (model.getAutenticador().getAutenticacao() == null) {
-            itemSistemaAutenticarActionPerformed(null);
-        } else {
-            // já se autenticou
-            // mostra menu
-        }
+        // Autenticacao was simplified
     }//GEN-LAST:event_formWindowOpened
 
     private void itemSistemaCarregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemSistemaCarregarActionPerformed
@@ -421,23 +415,7 @@ public class OurMarket_View_Grafico extends javax.swing.JFrame implements OurMar
     }//GEN-LAST:event_textPesquisaProdutosActionPerformed
 
     private void itemSistemaAutenticarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemSistemaAutenticarActionPerformed
-        Credencial_View credencialView = ((Fabrica_Grafica) Fabrica.GetViewFabricaConcreta()).new_Credencial_View(this, true, null);
-        credencialView.setCredencial();
-        if (credencialView.getModel() == null) {
-            //System.out.println("Sua credencial nao foi criada");
-            JOptionPane.showMessageDialog(this, "Sua credencial nao foi criada", "Credencial", JOptionPane.WARNING_MESSAGE);
-        } else {
-            Credencial_if credencial = credencialView.getModel();
-            autenticacao = model.getAutenticador().autentique_se(credencial);
-            if (autenticacao == null) {
-                //System.out.println("Autenticacao falhou");
-                JOptionPane.showMessageDialog(this, "Autenticacao falhou", "Autenticacao", JOptionPane.WARNING_MESSAGE);
-            } else {
-                //System.out.println("Voce se autenticou com sucesso");
-                JOptionPane.showMessageDialog(this, "Voce se autenticou com sucesso", "Autenticacao", JOptionPane.PLAIN_MESSAGE);
-            }
-        }
-        atualizeMenu();
+        JOptionPane.showMessageDialog(this, "Autenticacao GUI foi removida", "Ops...", JOptionPane.ERROR_MESSAGE);
     }//GEN-LAST:event_itemSistemaAutenticarActionPerformed
 
     private void arvoreCategoriasValueChanged(javax.swing.event.TreeSelectionEvent evt) {//GEN-FIRST:event_arvoreCategoriasValueChanged
@@ -498,15 +476,9 @@ public class OurMarket_View_Grafico extends javax.swing.JFrame implements OurMar
     private javax.swing.JTextField textPesquisaProdutos;
     // End of variables declaration//GEN-END:variables
 
-    Autenticacao autenticacao;
-
-    {
-        autenticacao = null;
-    }
-
     private void atualizeMenu() {
-        menuMercado.setEnabled(autenticacao != null);
-        itemSistemaAutenticar.setEnabled(autenticacao == null);
+        menuMercado.setEnabled(true);
+        itemSistemaAutenticar.setEnabled(true);
     }
     
     private String mostraInfoProduto(Produto produto, String campo){

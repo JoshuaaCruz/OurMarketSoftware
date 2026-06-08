@@ -1,6 +1,5 @@
 package view;
 
-import model.autenticador.Credencial_if;
 import model.cliente.Cliente_if;
 
 /**

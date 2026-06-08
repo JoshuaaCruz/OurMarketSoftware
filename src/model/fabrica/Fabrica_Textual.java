@@ -6,17 +6,11 @@ package model.fabrica;
 
 import model.Fabrica;
 import model.OurMarket;
-import model.autenticador.Autenticador_if;
-import model.autenticador.Credencial_if;
 import model.cliente.Cliente_if;
-import view.Autenticador_View;
 import view.Cliente_View;
-import view.Credencial_View;
 import view.OurMarket_View;
 import view.Menu_if;
-import view.terminal.Autenticador_View_Textual;
 import view.terminal.Categoria_Menu_View_Textual;
-import view.terminal.CredencialLoginSenha_View_Textual;
 import view.terminal.OurMarket_View_Textual;
 import view.terminal.MenuFormaPagamento_View_Textual;
 import view.terminal.Produtos_Menu_View_Textual;
@@ -24,18 +18,8 @@ import view.terminal.Produtos_Menu_View_Textual;
 public class Fabrica_Textual extends Fabrica {
 
     @Override
-    public Autenticador_View new_Autenticador_View(Autenticador_if model) {
-        return new Autenticador_View_Textual(model);
-    }
-
-    @Override
     public OurMarket_View new_OurMarket_View(OurMarket model) {
         return new OurMarket_View_Textual(model);
-    }
-
-    @Override
-    public Credencial_View new_Credencial_View(Credencial_if model) {
-        return new CredencialLoginSenha_View_Textual(model);
     }
 
     @Override

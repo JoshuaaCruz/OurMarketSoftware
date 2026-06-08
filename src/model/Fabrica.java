@@ -1,7 +1,5 @@
 package model;
 
-import model.autenticador.AutenticadorDefault;
-import model.autenticador.Autenticador_if;
 import model.fabrica.Fabrica_Grafica;
 import model.fabrica.Fabrica_if;
 
@@ -25,9 +23,7 @@ public abstract class Fabrica implements Fabrica_if{
         fabricaConcreta = aFabricaConcreta;
     }
 
-    static Autenticador_if new_Autenticador() {
-        return new AutenticadorDefault();
-    }
+
     static {
         /// Configuracao Geral do frontend do aplicativo
         //fabricaConcreta = new Fabrica_Textual();
