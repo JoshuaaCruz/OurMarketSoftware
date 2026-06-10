@@ -12,7 +12,7 @@ public class Endereco {
     public Endereco(String estado, String cidade, String rua, int numero, String complemento) {
         this.estado = estado;
         this.cidade = cidade;
-        this.rua = rua;
+        this.logradouro = logradouro;
         this.numero = numero;
         this.complemento = complemento;
     }
