@@ -17,8 +17,6 @@ public class OurMarket {
     
     private final List<Cliente> clientes;
     private final List<Cupom> cupons;
-    private ContaBancaria contaMercado; // TODO: necessario para taxa das transacoes? ou não será considerado? 
-    
     private final Categoria_if categoriaRaiz;
     
     // Cliente atualmente autenticado na sessão
@@ -126,7 +124,6 @@ public class OurMarket {
         Produto pSsd = new Produto("SSD 1TB NVMe", "Leitura 7000MB/s, compatível PCIe 4.0", 300);
 
         // Configura vendor, nota, categoria
-        //TODO: Verificar se nota deve iniciar vazia. talvez depois do caso de uso Avaliar produto estiver pronto
         adicionarProdutoAoSistema(pGta, lojaPadrao, 0, catGames, 10);
         adicionarProdutoAoSistema(pRdr2, lojaPadrao, 0, catGames, 10);
         adicionarProdutoAoSistema(pCarregador, lojaPadrao, 0, catPecasCelular, 50);
@@ -163,6 +160,22 @@ public class OurMarket {
             return null;
         }
         return clienteLogado.getEstoque();
+    }
+
+    public ContaBancaria getContaDoClienteLogado() {
+        if (clienteLogado == null) return null;
+        return clienteLogado.getContaCliente();
+    }
+
+    public List<FormaDePagamento> getFormasPagamentoDoClienteLogado() {
+        ContaBancaria conta = getContaDoClienteLogado();
+        if (conta == null) return Collections.emptyList();
+        return conta.getFormasPagamento();
+    }
+
+    public int getEstoqueDisponivel(Produto produto) {
+        if (produto == null || produto.getVendedor() == null) return 0;
+        return produto.getVendedor().getEstoque().getQuantidade(produto);
     }
 
 
