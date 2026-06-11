@@ -80,6 +80,17 @@ public class Cliente implements Cliente_if{
         return enderecos;
     }
 
+    public Endereco getEndereco() {
+        return enderecos.isEmpty() ? null : enderecos.get(0);
+    }
+
+    public void setEndereco(Endereco endereco) {
+        enderecos.clear();
+        if (endereco != null) {
+            enderecos.add(endereco);
+        }
+    }
+
     public void addEndereco(Endereco endereco) {
         if (endereco != null) {
             enderecos.add(endereco);
@@ -138,6 +149,10 @@ public class Cliente implements Cliente_if{
         return produtosVendidos.size();
     }
 
+    public List<ItemProduto> getProdutosVendidos() {
+        return produtosVendidos;
+    }
+
     public List<Produto> getListaDesejos() {
         return listaDesejos;
     }
@@ -176,5 +191,9 @@ public class Cliente implements Cliente_if{
         if (codigo != null) {
             cuponsUsados.add(codigo.toUpperCase());
         }
+    }
+
+    public Set<String> getCuponsUsados() {
+        return cuponsUsados;
     }
 }

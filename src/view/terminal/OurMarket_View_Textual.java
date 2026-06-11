@@ -156,6 +156,7 @@ public class OurMarket_View_Textual implements OurMarket_View {
 
         model.adicionarCliente(cliente);
         model.login(login, senha);
+        model.salvar();
 
         System.out.println("\n Cadastro realizado com sucesso! Você já está logado como '" + cliente.getName() + "'.");
 
@@ -205,6 +206,7 @@ public class OurMarket_View_Textual implements OurMarket_View {
         double valorDeposito = scanner.nextDouble();
         scanner.nextLine();
         conta.depositar(valorDeposito);
+        model.salvar();
         System.out.println("Depósito de R$ " + valorDeposito + " realizado com sucesso!");
     }
 
@@ -219,6 +221,7 @@ public class OurMarket_View_Textual implements OurMarket_View {
         scanner.nextLine();
         boolean sucessoSaque = conta.sacar(valorSaque);
         if (sucessoSaque) {
+            model.salvar();
             System.out.println("Saque de R$ " + valorSaque + " realizado com sucesso!");
         } else {
             System.out.println("Saldo insuficiente para realizar o saque.");
@@ -233,6 +236,7 @@ public class OurMarket_View_Textual implements OurMarket_View {
 
         Menu_if menuFormaPagamento = new MenuFormaPagamento_View_Textual(conta, scanner);
         menuFormaPagamento.mostre();
+        model.salvar();
     }
 
     private void verPagarFaturaCartao() {
@@ -267,6 +271,7 @@ public class OurMarket_View_Textual implements OurMarket_View {
         double faturaAntes = conta.getFatura();
         conta.pagarFatura(valor);
         if (conta.getFatura() < faturaAntes) {
+            model.salvar();
             System.out.printf("Pagamento de R$ %.2f realizado! Fatura restante: R$ %.2f%n", valor, conta.getFatura());
         } else {
             System.out.println("Valor inválido ou maior que a fatura.");
@@ -281,6 +286,7 @@ public class OurMarket_View_Textual implements OurMarket_View {
 
         Menu_if menuProdutos = new Produtos_Menu_View_Textual(model, scanner);
         menuProdutos.mostre();
+        model.salvar();
     }
 
     private void gerenciarCategorias() {
@@ -293,6 +299,7 @@ public class OurMarket_View_Textual implements OurMarket_View {
             System.out.println("\n Acesso concedido!");
             Menu_if menuCategorias = new Categoria_Menu_View_Textual(model, scanner);
             menuCategorias.mostre();
+            model.salvar();
         } else {
             System.out.println("\n Senha incorreta. Acesso negado, voltando ao menu principal...");
         }
@@ -311,7 +318,8 @@ public class OurMarket_View_Textual implements OurMarket_View {
         for (Categoria_if cat : categoriasDestaque) {
             System.out.println("\n >> Categoria: " + cat.getNome() + " <<");
             
-            List<Produto> produtos = new ArrayList<>(cat.getProdutos());
+            List<Produto> produtos = new ArrayList<>();
+            coletarProdutosCategoria(cat, produtos);
             if (produtos.isEmpty()) {
                 System.out.println("   (Sem produtos nesta categoria)");
                 continue;
@@ -325,6 +333,13 @@ public class OurMarket_View_Textual implements OurMarket_View {
                 Produto p = produtos.get(i);
                 System.out.printf("   %d. %s (Vendas: %d) - R$ %.2f\n", i + 1, p.getNome(), p.getVendas(), p.getPrecoBase());
             }
+        }
+    }
+
+    private void coletarProdutosCategoria(Categoria_if cat, List<Produto> produtos) {
+        produtos.addAll(cat.getProdutos());
+        for (Categoria_if sub : cat.getSubcategorias()) {
+            coletarProdutosCategoria(sub, produtos);
         }
     }
 
@@ -344,6 +359,7 @@ public class OurMarket_View_Textual implements OurMarket_View {
         }
         Menu_if menuEnderecos = new Endereco_Menu_View_Textual(cliente, scanner);
         menuEnderecos.mostre();
+        model.salvar();
     }
 
     private void verificarAniversario(Cliente cliente) {

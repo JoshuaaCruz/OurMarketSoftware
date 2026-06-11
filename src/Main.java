@@ -1,4 +1,6 @@
 
+import db.Base;
+import db.LivreMercadoDAO;
 import model.Fabrica;
 import model.OurMarket;
 import model.fabrica.Fabrica_Grafica;
@@ -21,8 +23,18 @@ public class Main {
                 }
             }
         }
-        OurMarket mercado = new OurMarket();
+        Base base = new Base();
+        LivreMercadoDAO mercadoDAO = new LivreMercadoDAO(base);
+        OurMarket mercado = new OurMarket(false);
+        try {
+            mercadoDAO.carregarEm(mercado);
+            mercado.habilitarPersistencia(mercadoDAO);
+        } catch (java.sql.SQLException exception) {
+            System.err.println("Erro ao carregar banco de dados: " + exception.getMessage());
+            mercado.inicializarDadosPadrao();
+        }
         OurMarket_View frontEnd = Fabrica.GetViewFabricaConcreta().new_OurMarket_View(mercado);
         frontEnd.mostre();
+        mercado.salvar();
     }   
 }

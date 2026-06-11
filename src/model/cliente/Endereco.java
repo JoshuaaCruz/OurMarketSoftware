@@ -12,7 +12,7 @@ public class Endereco {
     public Endereco(String estado, String cidade, String rua, int numero, String complemento) {
         this.estado = estado;
         this.cidade = cidade;
-        this.logradouro = logradouro;
+        this.rua = rua;
         this.numero = numero;
         this.complemento = complemento;
     }
@@ -39,6 +39,14 @@ public class Endereco {
 
     public void setRua(String rua) { 
         this.rua = rua; 
+    }
+
+    public String getLogradouro() {
+        return rua;
+    }
+
+    public void setLogradouro(String logradouro) {
+        this.rua = logradouro;
     }
 
     public int getNumero() { 

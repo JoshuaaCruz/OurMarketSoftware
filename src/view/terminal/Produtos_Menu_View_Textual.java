@@ -207,6 +207,7 @@ public class Produtos_Menu_View_Textual implements Menu_if {
                 System.out.println("    Vendedor: " + p.getVendedor().getName());
             }
             System.out.println("    Nota: " + String.format("%.2f", p.getNota()));
+            imprimirFotos(p);
         }
 
         System.out.println("-------------------------------------------------");
@@ -288,6 +289,7 @@ public class Produtos_Menu_View_Textual implements Menu_if {
             System.out.println(" O produto '" + produto.getNome() + "' já está na sua lista de desejos.");
         } else {
             cliente.addProdutoListaDesejo(produto);
+            model.salvar();
             System.out.println("\n Produto '" + produto.getNome() + "' adicionado à Lista de Desejos com sucesso!");
         }
     }
@@ -315,6 +317,7 @@ public class Produtos_Menu_View_Textual implements Menu_if {
         }
 
         cliente.getCarrinho().adicionarProduto(produto, quantidade);
+        model.salvar();
         System.out.println("\n " + quantidade + "x '" + produto.getNome() + "' adicionado ao Carrinho com sucesso!");
     }
 
@@ -349,6 +352,7 @@ public class Produtos_Menu_View_Textual implements Menu_if {
 
         Produto produto = listaDesejos.get(escolha - 1);
         cliente.removeProdutoListaDesejo(produto);
+        model.salvar();
 
         System.out.println("\n Produto '" + produto.getNome() + "' removido da Lista de Desejos com sucesso!");
         }
@@ -367,6 +371,7 @@ public class Produtos_Menu_View_Textual implements Menu_if {
 
         if (confirmacao.equals("S")) {
             cliente.deleteListaDesejos();
+            model.salvar();
             System.out.println("\n Lista de desejos limpa com sucesso!");
         } else {
             System.out.println("Operação cancelada.");
@@ -406,6 +411,7 @@ public class Produtos_Menu_View_Textual implements Menu_if {
         Produto novoProduto = new Produto(nome, descricao, preco);
         novoProduto.setNota(nota);
         novoProduto.setVendedor(model.getClienteLogado());
+        coletarFotos(novoProduto);
 
         if (categoriaEscolhida != null) {
             novoProduto.setCategoria((Categoria) categoriaEscolhida);
@@ -413,6 +419,7 @@ public class Produtos_Menu_View_Textual implements Menu_if {
         }
 
         colecao.adicionarProduto(novoProduto, quantidade);
+        model.salvar();
 
         System.out.println("\n " + quantidade + "x '" + nome + "' adicionado ao seu Estoque com sucesso!");
     }
@@ -443,6 +450,7 @@ public class Produtos_Menu_View_Textual implements Menu_if {
                 System.out.println("    Vendedor: " + p.getVendedor().getName());
             }
             System.out.println("    Nota: " + String.format("%.2f", p.getNota()));
+            imprimirFotos(p);
         }
 
         System.out.println("-------------------------------------------------");
@@ -490,6 +498,7 @@ public class Produtos_Menu_View_Textual implements Menu_if {
         System.out.println("3. Preço");
         System.out.println("4. Nota");
         System.out.println("5. Categoria");
+        System.out.println("6. Fotos");
         System.out.println("0. Cancelar");
         System.out.print("Escolha: ");
 
@@ -501,12 +510,14 @@ public class Produtos_Menu_View_Textual implements Menu_if {
                 System.out.print("Novo nome: ");
                 String novoNome = scanner.nextLine();
                 produto.setNome(novoNome);
+                model.salvar();
                 System.out.println(" Nome atualizado com sucesso!");
                 break;
             case 2:
                 System.out.print("Nova descrição: ");
                 String novaDesc = scanner.nextLine();
                 produto.setDescricao(novaDesc);
+                model.salvar();
                 System.out.println(" Descrição atualizada com sucesso!");
                 break;
             case 3:
@@ -514,6 +525,7 @@ public class Produtos_Menu_View_Textual implements Menu_if {
                 double novoPreco = scanner.nextDouble();
                 scanner.nextLine();
                 produto.setPrecoBase(novoPreco);
+                model.salvar();
                 System.out.println(" Preço atualizado com sucesso!");
                 break;
             case 4:
@@ -521,6 +533,7 @@ public class Produtos_Menu_View_Textual implements Menu_if {
                 double novaNota = scanner.nextDouble();
                 scanner.nextLine();
                 produto.setNota(novaNota);
+                model.salvar();
                 System.out.println(" Nota atualizada com sucesso!");
                 break;
             case 5:
@@ -535,11 +548,16 @@ public class Produtos_Menu_View_Textual implements Menu_if {
                 if (novaCategoria != null) {
                     produto.setCategoria((Categoria) novaCategoria);
                     ((Categoria) novaCategoria).addProduto(produto);
+                    model.salvar();
                     System.out.println(" Categoria atualizada com sucesso para '" + novaCategoria.getNome() + "'!");
                 } else {
                     produto.setCategoria(null);
+                    model.salvar();
                     System.out.println(" Produto agora não possui categoria.");
                 }
+                break;
+            case 6:
+                gerenciarFotosProduto(produto);
                 break;
             case 0:
                 System.out.println("Operação cancelada.");
@@ -597,6 +615,7 @@ public class Produtos_Menu_View_Textual implements Menu_if {
         }
 
         colecao.removerProduto(produto, qtdRemover);
+        model.salvar();
         System.out.println("\n " + qtdRemover + "x '" + nomeProduto + "' removido do " + nomeColecao + " com sucesso!");
     }
 
@@ -633,6 +652,7 @@ public class Produtos_Menu_View_Textual implements Menu_if {
         System.out.println("\n--- NOTA DO PRODUTO ---");
         System.out.println("Produto: " + produto.getNome());
         System.out.println("Nota: " + String.format("%.1f", produto.getNota()));
+        imprimirFotos(produto);
 
         Cliente vendedor = produto.getVendedor();
         if (vendedor == null) {
@@ -675,8 +695,98 @@ public class Produtos_Menu_View_Textual implements Menu_if {
             System.out.println("    Quantidade: " + qtd);
             System.out.println("    Subtotal:   R$ " + String.format("%.2f", subtotal));
             System.out.println("    Vendedor: " + p.getVendedor().getName());
+            imprimirFotos(p);
             
         }
+    }
+
+    private void coletarFotos(Produto produto) {
+        System.out.println("\nFotos do produto");
+        System.out.println("Informe caminhos ou URLs. Pressione Enter sem digitar nada para finalizar.");
+        while (true) {
+            System.out.print("Foto " + (produto.getFotos().size() + 1) + ": ");
+            String caminho = scanner.nextLine().trim();
+            if (caminho.isEmpty()) {
+                return;
+            }
+            produto.addFoto(caminho);
+        }
+    }
+
+    private void imprimirFotos(Produto produto) {
+        List<String> fotos = produto.getFotos();
+        if (fotos.isEmpty()) {
+            System.out.println("    Fotos: nenhuma");
+            return;
+        }
+        System.out.println("    Fotos:");
+        for (int i = 0; i < fotos.size(); i++) {
+            System.out.println("      " + (i + 1) + ". " + fotos.get(i));
+        }
+    }
+
+    private void gerenciarFotosProduto(Produto produto) {
+        int opcao = -1;
+        while (opcao != 0) {
+            System.out.println("\n--- GERENCIAR FOTOS ---");
+            imprimirFotos(produto);
+            System.out.println("1. Adicionar foto");
+            System.out.println("2. Remover foto");
+            System.out.println("3. Limpar fotos");
+            System.out.println("0. Voltar");
+            System.out.print("Escolha: ");
+
+            opcao = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (opcao) {
+                case 1:
+                    coletarFotos(produto);
+                    model.salvar();
+                    System.out.println(" Fotos atualizadas com sucesso!");
+                    break;
+                case 2:
+                    removerFotoProduto(produto);
+                    break;
+                case 3:
+                    produto.limparFotos();
+                    model.salvar();
+                    System.out.println(" Fotos removidas com sucesso!");
+                    break;
+                case 0:
+                    System.out.println("Voltando...");
+                    break;
+                default:
+                    System.out.println(" Opção inválida.");
+                    break;
+            }
+        }
+    }
+
+    private void removerFotoProduto(Produto produto) {
+        List<String> fotos = produto.getFotos();
+        if (fotos.isEmpty()) {
+            System.out.println(" Produto não possui fotos cadastradas.");
+            return;
+        }
+
+        System.out.print("Escolha o número da foto a remover (0 para cancelar): ");
+        int escolha = scanner.nextInt();
+        scanner.nextLine();
+
+        if (escolha == 0) {
+            System.out.println("Operação cancelada.");
+            return;
+        }
+        if (escolha < 1 || escolha > fotos.size()) {
+            System.out.println(" Número inválido.");
+            return;
+        }
+
+        String caminho = fotos.get(escolha - 1);
+        produto.removeFoto(caminho);
+        model.salvar();
+        System.out.println(" Foto removida com sucesso!");
     }
 
     private void finalizarCompra(Cliente cliente) {
@@ -795,6 +905,7 @@ public class Produtos_Menu_View_Textual implements Menu_if {
         String resultado = model.processarCompra(cliente, formaEscolhida, cupom); //Facade
         
         if (resultado.equals("Sucesso")) {
+            model.salvar();
             System.out.println("\n Compra realizada com sucesso!");
             System.out.println(" O pedido será entregue em: " + enderecoEscolhido.toString());
         } else {

@@ -1,5 +1,8 @@
 package model.categoria_produto;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import model.cliente.Cliente;
 
 public class Produto {
@@ -10,6 +13,7 @@ public class Produto {
     private Categoria categoria;
     private double nota;
     private int vendas;
+    private final List<String> fotos;
 
     public Produto(String nome, String descricao, double precoBase){
         this.nome=nome;
@@ -17,6 +21,7 @@ public class Produto {
         this.precoBase=precoBase;
         this.nota = 0;
         this.vendas = 0;
+        this.fotos = new ArrayList<>();
     }
     
     
@@ -95,5 +100,23 @@ public class Produto {
 
     public void setVendas(int vendas) {
         this.vendas = vendas;
+    }
+
+    public List<String> getFotos() {
+        return Collections.unmodifiableList(fotos);
+    }
+
+    public void addFoto(String caminho) {
+        if (caminho != null && !caminho.isBlank() && !fotos.contains(caminho)) {
+            fotos.add(caminho);
+        }
+    }
+
+    public boolean removeFoto(String caminho) {
+        return fotos.remove(caminho);
+    }
+
+    public void limparFotos() {
+        fotos.clear();
     }
 }

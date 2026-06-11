@@ -98,6 +98,7 @@ public class Categoria_Menu_View_Textual implements Menu_if {
         novaCat.setDescricao(novaDescricao);
         
         ((Categoria) pai).addSubCategoria(novaCat);
+        model.salvar();
         System.out.println(" Subcategoria '" + novoNome + "' adicionada em '" + pai.getNome() + "' com sucesso!");
     }
 
@@ -132,6 +133,7 @@ public class Categoria_Menu_View_Textual implements Menu_if {
         }
 
         ((Categoria) pai).removerSubcategoria((Categoria) alvo);
+        model.salvar();
         System.out.println(" Subcategoria '" + alvo.getNome() + "' removida com sucesso!");
     }
 
@@ -147,6 +149,7 @@ public class Categoria_Menu_View_Textual implements Menu_if {
 
         boolean novoStatus = !cat.isDestaqueAdmin();
         cat.setDestaqueAdmin(novoStatus);
+        model.salvar();
         
         if (novoStatus) {
             System.out.println(" Categoria '" + cat.getNome() + "' agora está em DESTAQUE!");

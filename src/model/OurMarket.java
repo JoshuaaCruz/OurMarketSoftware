@@ -3,6 +3,7 @@ package model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import db.LivreMercadoDAO;
 import model.categoria_produto.Categoria;
 import model.categoria_produto.Categoria_if;
 import model.categoria_produto.ColecaoProdutos;
@@ -22,11 +23,32 @@ public class OurMarket {
     
     // Cliente atualmente autenticado na sessão
     private Cliente clienteLogado;
+    private LivreMercadoDAO persistencia;
 
     public OurMarket() {
-        initOrLoad();
+        this(true);
     }
 
+    public OurMarket(boolean inicializarPadrao) {
+        if (inicializarPadrao) {
+            inicializarDadosPadrao();
+        }
+    }
+
+    public void habilitarPersistencia(LivreMercadoDAO persistencia) {
+        this.persistencia = persistencia;
+    }
+
+    public void salvar() {
+        if (persistencia == null) {
+            return;
+        }
+        try {
+            persistencia.salvar(this);
+        } catch (java.sql.SQLException exception) {
+            System.err.println("Erro ao salvar banco: " + exception.getMessage());
+        }
+    }
 
 
     /**
@@ -63,7 +85,10 @@ public class OurMarket {
         clienteLogado = null;
     }
 
-    private void initOrLoad() {
+    public void inicializarDadosPadrao() {
+        if (!clientes.isEmpty()) {
+            return;
+        }
         // inicializa vendedor padrão do sistema para ja haver produtos cadastrados
         Cliente lojaPadrao = new Cliente();
         lojaPadrao.setNome("Loja Padrão");
@@ -145,9 +170,33 @@ public class OurMarket {
         return Collections.unmodifiableList(clientes);
     }
 
+    public List<Cupom> getCupons() {
+        return Collections.unmodifiableList(cupons);
+    }
+
+    public void adicionarCupom(Cupom cupom) {
+        if (cupom == null) {
+            return;
+        }
+        for (int i = 0; i < cupons.size(); i++) {
+            if (cupons.get(i).getCodigo().equals(cupom.getCodigo())) {
+                cupons.set(i, cupom);
+                return;
+            }
+        }
+        cupons.add(cupom);
+    }
+
 
     public void adicionarCliente(Cliente cliente) {
         if (cliente != null) {
+            for (int i = 0; i < clientes.size(); i++) {
+                Cliente existente = clientes.get(i);
+                if (existente.getCPF() != null && existente.getCPF().equals(cliente.getCPF())) {
+                    clientes.set(i, cliente);
+                    return;
+                }
+            }
             clientes.add(cliente);
         }
     }
@@ -207,9 +256,12 @@ public class OurMarket {
             totalGasto += p.getPrecoBase() * qtd;
         }
 
+        double totalFinal = cupom == null ? totalGasto : cupom.aplicar(totalGasto);
+        double fatorDesconto = totalGasto <= 0 ? 1 : totalFinal / totalGasto;
+
         // Pass 2: Check balance
-        if (!origem.podePagar(totalGasto)) {
-            return "Erro: Saldo/Limite insuficiente para a compra no valor de R$ " + String.format("%.2f", totalGasto) + ".";
+        if (!origem.podePagar(totalFinal)) {
+            return "Erro: Saldo/Limite insuficiente para a compra no valor de R$ " + String.format("%.2f", totalFinal) + ".";
         }
 
         // Pass 3: Execute transactions
@@ -217,7 +269,7 @@ public class OurMarket {
         for (ItemProduto item : carrinho) {
             Produto p = item.getProduto();
             int qtd = item.getQuantidadeProduto();
-            double subtotal = p.getPrecoBase() * qtd;
+            double subtotal = p.getPrecoBase() * qtd * fatorDesconto;
             
             Cliente vendedor = p.getVendedor();
             
@@ -243,6 +295,7 @@ public class OurMarket {
             comprador.markCupomAsUsado(cupom.getCodigo());
         }
 
+        salvar();
         return "Sucesso";
     }
 
