@@ -6,6 +6,7 @@ import java.util.List;
 import model.cliente.Cliente;
 
 public class Produto {
+    private int id;
     private String nome;
     private String descricao;
     private double precoBase;
@@ -13,6 +14,7 @@ public class Produto {
     private Categoria categoria;
     private double nota;
     private int vendas;
+    private int totalVotos;
     private final List<String> fotos;
 
     public Produto(String nome, String descricao, double precoBase){
@@ -21,7 +23,16 @@ public class Produto {
         this.precoBase=precoBase;
         this.nota = 0;
         this.vendas = 0;
+        this.id = 0; // 0 significa que o produto ainda não foi salvo no banco
         this.fotos = new ArrayList<>();
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
     
     
@@ -100,6 +111,20 @@ public class Produto {
 
     public void setVendas(int vendas) {
         this.vendas = vendas;
+    }
+
+    public int getTotalVotos() {
+        return totalVotos;
+    }
+
+    public void setTotalVotos(int totalVotos) {
+        this.totalVotos = Math.max(0, totalVotos);
+    }
+
+    public void adicionarAvaliacao(double novaVota) {
+        novaVota = Math.max(0, Math.min(5, novaVota)); // Limita a avaliação entre 0 e 5
+        nota = (nota * totalVotos + novaVota) / (totalVotos + 1);
+        totalVotos++;
     }
 
     public List<String> getFotos() {

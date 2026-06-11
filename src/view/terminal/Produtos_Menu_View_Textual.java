@@ -695,8 +695,16 @@ public class Produtos_Menu_View_Textual implements Menu_if {
             System.out.println("    Quantidade: " + qtd);
             System.out.println("    Subtotal:   R$ " + String.format("%.2f", subtotal));
             System.out.println("    Vendedor: " + p.getVendedor().getName());
+            System.out.println("    Nota do produto: " + String.format("%.1f", p.getNota())
+                    + " (" + p.getTotalVotos() + " voto(s))"
+                    + (cliente.jaAvaliou(p) ? " [JA AVALIADO POR VOCE]" : ""));
             imprimirFotos(p);
-            
+        }
+
+        System.out.println("\n-------------------------------------------------");
+        System.out.print("Deseja avaliar algum produto? (S/N): ");
+        if (scanner.nextLine().trim().equalsIgnoreCase("S")) {
+            new Avaliacao_Menu_View_Textual(model, scanner).iniciar();
         }
     }
 

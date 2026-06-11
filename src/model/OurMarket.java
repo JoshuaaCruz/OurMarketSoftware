@@ -127,13 +127,13 @@ public class OurMarket {
 
         // Configura vendor, nota, categoria
         //TODO: Verificar se nota deve iniciar vazia. talvez depois do caso de uso Avaliar produto estiver pronto
-        adicionarProdutoAoSistema(pGta, lojaPadrao, 5, catGames, 10);
-        adicionarProdutoAoSistema(pRdr2, lojaPadrao, 5, catGames, 10);
-        adicionarProdutoAoSistema(pCarregador, lojaPadrao, 4, catPecasCelular, 50);
-        adicionarProdutoAoSistema(pCapinha, lojaPadrao, 3, catPecasCelular, 20);
-        adicionarProdutoAoSistema(pNotebook, lojaPadrao, 5, catInformatica, 1);
-        adicionarProdutoAoSistema(pFone, lojaPadrao, 3, catInformatica, 1);
-        adicionarProdutoAoSistema(pSsd, lojaPadrao, 4, catInformatica, 5);
+        adicionarProdutoAoSistema(pGta, lojaPadrao, 0, catGames, 10);
+        adicionarProdutoAoSistema(pRdr2, lojaPadrao, 0, catGames, 10);
+        adicionarProdutoAoSistema(pCarregador, lojaPadrao, 0, catPecasCelular, 50);
+        adicionarProdutoAoSistema(pCapinha, lojaPadrao, 0, catPecasCelular, 20);
+        adicionarProdutoAoSistema(pNotebook, lojaPadrao, 0, catInformatica, 1);
+        adicionarProdutoAoSistema(pFone, lojaPadrao, 0, catInformatica, 1);
+        adicionarProdutoAoSistema(pSsd, lojaPadrao, 0, catInformatica, 5);
     }
 
     private void adicionarProdutoAoSistema(Produto p, Cliente vendedor, double nota, Categoria cat, int qtd) {
@@ -218,6 +218,36 @@ public class OurMarket {
     public boolean cupomDisponivel(Cliente cliente, Cupom cupom) {
         if (cliente == null || cupom == null) return false;
         return !cliente.jaFoiUsado(cupom.getCodigo());
+    }
+
+    public String avaliarProduto(Cliente comprador, Produto produto, double nota) {
+        if (comprador == null || produto == null) return "Erro: Dados inválidos.";
+        if (nota < 0 || nota > 5) return "Erro: Nota deve ser entre 0 e 5.";
+
+        // verificando se cliente já comprou o produto
+        boolean comprou = false;
+        for (ItemProduto item : comprador.getPedidosComprados()) {
+            if (item.getProduto() != null && item.getProduto().getNome().equals(produto.getNome())) {
+                comprou = true;
+                break;
+            }
+        }
+        if (!comprou) return "Erro: Você só pode avaliar produtos que comprou.";
+
+        // não deixa avaliar produtos que ja o fez
+        if (comprador.jaAvaliou(produto)) return "Erro: Você já avaliou este produto.";
+
+        produto.adicionarAvaliacao(nota);
+        comprador.marcarComoAvaliado(produto);
+
+        // atualizando nota do vendedor
+        Cliente vendedor = produto.getVendedor();
+        if (vendedor != null) {
+            vendedor.calculaNotaColecao(vendedor.getEstoque());
+        }
+
+        salvar();
+        return "Sucesso";
     }
 
     //compra em si, utiliza metodo pagamento selecionado do comprador, atualiza listas, e retorna status

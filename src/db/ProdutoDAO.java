@@ -126,6 +126,7 @@ public class ProdutoDAO {
         if (idProduto > 0) {
             atualizarProdutoCatalogo(connection, idProduto, produto, idCategoria);
             salvarFotos(connection, idProduto, produto);
+            produto.setId(idProduto);
             return idProduto;
         }
         return inserirProdutoCatalogo(connection, produto, idCategoria);
@@ -133,13 +134,14 @@ public class ProdutoDAO {
 
     private int inserirProdutoCatalogo(Connection connection, Produto produto, Integer idCategoria)
             throws SQLException {
-        String sql = "INSERT INTO produto (nome, descricao, id_categoria, vendas) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO produto (nome, descricao, id_categoria, vendas, total_votos) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             preencherProdutoCatalogo(statement, produto, idCategoria);
             statement.executeUpdate();
             try (ResultSet keys = statement.getGeneratedKeys()) {
                 if (keys.next()) {
                     int idProduto = keys.getInt(1);
+                    produto.setId(idProduto);
                     salvarFotos(connection, idProduto, produto);
                     return idProduto;
                 }
@@ -150,10 +152,10 @@ public class ProdutoDAO {
 
     private void atualizarProdutoCatalogo(Connection connection, int idProduto, Produto produto,
             Integer idCategoria) throws SQLException {
-        String sql = "UPDATE produto SET nome = ?, descricao = ?, id_categoria = ?, vendas = ? WHERE id_produto = ?";
+        String sql = "UPDATE produto SET nome = ?, descricao = ?, id_categoria = ?, vendas = ?, total_votos = ? WHERE id_produto = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             preencherProdutoCatalogo(statement, produto, idCategoria);
-            statement.setInt(5, idProduto);
+            statement.setInt(6, idProduto);
             statement.executeUpdate();
         }
     }
@@ -190,7 +192,7 @@ public class ProdutoDAO {
     }
 
     private Optional<Produto> buscarItemPorId(Connection connection, int idItemProduto) throws SQLException {
-        String sql = "SELECT p.id_produto, p.nome, p.descricao, p.id_categoria, p.vendas, i.preco_base, i.nota, "
+        String sql = "SELECT p.id_produto, p.nome, p.descricao, p.id_categoria, p.vendas, p.total_votos, i.preco_base, i.nota, "
                 + "c.cpf, c.nome AS nome_vendedor "
                 + "FROM item_produto i "
                 + "JOIN produto p ON p.id_produto = i.id_produto "
@@ -206,8 +208,10 @@ public class ProdutoDAO {
                         resultSet.getString("nome"),
                         resultSet.getString("descricao"),
                         resultSet.getDouble("preco_base"));
+                produto.setId(resultSet.getInt("id_produto"));
                 produto.setNota(resultSet.getDouble("nota"));
                 produto.setVendas(resultSet.getInt("vendas"));
+                produto.setTotalVotos(resultSet.getInt("total_votos"));
                 carregarCategoria(resultSet, produto);
                 carregarFotos(connection, resultSet.getInt("id_produto"), produto);
 
@@ -233,6 +237,7 @@ public class ProdutoDAO {
             statement.setInt(3, idCategoria);
         }
         statement.setInt(4, produto.getVendas());
+        statement.setInt(5, produto.getTotalVotos());
     }
 
     private int buscarIdProdutoCatalogo(Connection connection, Produto produto, Integer idCategoria)

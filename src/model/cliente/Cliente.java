@@ -22,6 +22,7 @@ public class Cliente implements Cliente_if{
     private List<ItemProduto> produtosVendidos;
     private List<ItemProduto> pedidosComprados;
     private Set<String> cuponsUsados;
+    private Set<String> produtosAvaliados;
 
     public Cliente() {
         this.estoque = new ColecaoProdutos();
@@ -31,6 +32,7 @@ public class Cliente implements Cliente_if{
         this.enderecos = new ArrayList<>();
         this.pedidosComprados = new ArrayList<>();
         this.cuponsUsados = new HashSet<>();
+        this.produtosAvaliados = new HashSet<>();
     }
 
     @Override
@@ -195,5 +197,28 @@ public class Cliente implements Cliente_if{
 
     public Set<String> getCuponsUsados() {
         return cuponsUsados;
+    }
+
+
+
+    private String chaveAvaliacao(Produto produto) {
+        if (produto.getId() > 0) {
+            return String.valueOf(produto.getId());
+        }
+        // caso o id seja 0, não deve acontecer mas por garantia
+        String cpfVendedor = (produto.getVendedor() != null) ? produto.getVendedor().getCPF() : "sem_vendedor";
+        return produto.getNome() + "::" + cpfVendedor;
+    }
+
+    public boolean jaAvaliou(Produto produto) {
+        return produtosAvaliados.contains(chaveAvaliacao(produto));
+    }
+
+    public void marcarComoAvaliado(Produto produto) {
+        produtosAvaliados.add(chaveAvaliacao(produto));
+    }
+
+    public Set<String> getProdutosAvaliados() {
+        return produtosAvaliados;
     }
 }

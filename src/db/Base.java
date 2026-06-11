@@ -185,6 +185,15 @@ public class Base {
                             + ")"
             );
 
+            statement.executeUpdate(
+                    "CREATE TABLE IF NOT EXISTS cliente_produto_avaliado ("
+                            + "cpf_cliente TEXT NOT NULL,"
+                            + "chave_avaliacao TEXT NOT NULL,"
+                            + "PRIMARY KEY (cpf_cliente, chave_avaliacao),"
+                            + "FOREIGN KEY (cpf_cliente) REFERENCES cliente(cpf) ON DELETE CASCADE"
+                            + ")"
+            );
+
             migrarSchema(statement);
         }
     }
@@ -193,6 +202,7 @@ public class Base {
         adicionarColunaSeNaoExistir(statement, "cliente", "data_nascimento", "TEXT");
         adicionarColunaSeNaoExistir(statement, "categoria", "destaque_admin", "INTEGER NOT NULL DEFAULT 0");
         adicionarColunaSeNaoExistir(statement, "produto", "vendas", "INTEGER NOT NULL DEFAULT 0");
+        adicionarColunaSeNaoExistir(statement, "produto", "total_votos", "INTEGER NOT NULL DEFAULT 0");
         recriarEnderecoAntigoSeNecessario(statement);
     }
 
@@ -251,6 +261,7 @@ public class Base {
             statement.executeUpdate("DROP TABLE IF EXISTS cliente_historico_produto");
             statement.executeUpdate("DROP TABLE IF EXISTS cliente_lista_desejos");
             statement.executeUpdate("DROP TABLE IF EXISTS cliente_cupom_usado");
+            statement.executeUpdate("DROP TABLE IF EXISTS cliente_produto_avaliado");
             statement.executeUpdate("DROP TABLE IF EXISTS cupom");
             statement.executeUpdate("DROP TABLE IF EXISTS item_produto");
             statement.executeUpdate("DROP TABLE IF EXISTS produto_foto");

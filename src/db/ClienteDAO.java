@@ -52,6 +52,7 @@ public class ClienteDAO {
         salvarHistorico(cliente, "COMPRA", cliente.getPedidosComprados());
         salvarHistorico(cliente, "VENDA", cliente.getProdutosVendidos());
         salvarCuponsUsados(cliente);
+        salvarProdutosAvaliados(cliente);
     }
 
     public Optional<Cliente> buscarPorCpf(String cpf) throws SQLException {
@@ -83,6 +84,7 @@ public class ClienteDAO {
                 carregarHistorico(cliente, "COMPRA", cliente.getPedidosComprados());
                 carregarHistorico(cliente, "VENDA", cliente.getProdutosVendidos());
                 carregarCuponsUsados(connection, cliente);
+                carregarProdutosAvaliados(connection, cliente);
                 return Optional.of(cliente);
             }
         }
@@ -417,6 +419,47 @@ public class ClienteDAO {
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
                     cliente.markCupomAsUsado(resultSet.getString("codigo_cupom"));
+                }
+            }
+        }
+    }
+
+    private void salvarProdutosAvaliados(Cliente cliente) throws SQLException {
+        try (Connection connection = base.getConnection()) {
+            connection.setAutoCommit(false);
+            try {
+                try (PreparedStatement delete = connection.prepareStatement(
+                        "DELETE FROM cliente_produto_avaliado WHERE cpf_cliente = ?")) {
+                    delete.setString(1, cliente.getCPF());
+                    delete.executeUpdate();
+                }
+                try (PreparedStatement insert = connection.prepareStatement(
+                        "INSERT INTO cliente_produto_avaliado (cpf_cliente, chave_avaliacao) VALUES (?, ?)")) {
+                    for (String chave : cliente.getProdutosAvaliados()) {
+                        insert.setString(1, cliente.getCPF());
+                        insert.setString(2, chave);
+                        insert.addBatch();
+                    }
+                    insert.executeBatch();
+                }
+                connection.commit();
+            } catch (SQLException exception) {
+                connection.rollback();
+                throw exception;
+            } finally {
+                connection.setAutoCommit(true);
+            }
+        }
+    }
+
+    private void carregarProdutosAvaliados(Connection connection, Cliente cliente) throws SQLException {
+        cliente.getProdutosAvaliados().clear();
+        try (PreparedStatement statement = connection.prepareStatement(
+                "SELECT chave_avaliacao FROM cliente_produto_avaliado WHERE cpf_cliente = ?")) {
+            statement.setString(1, cliente.getCPF());
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    cliente.getProdutosAvaliados().add(resultSet.getString("chave_avaliacao"));
                 }
             }
         }
