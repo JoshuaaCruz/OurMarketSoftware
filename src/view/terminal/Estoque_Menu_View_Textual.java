@@ -96,16 +96,11 @@ public class Estoque_Menu_View_Textual {
             return;
         }
 
-        System.out.print("Nota do produto (0-5): ");
-        double nota = scanner.nextDouble();
-        scanner.nextLine();
-
         System.out.println("Escolha a categoria do produto (0 para deixar sem categoria):");
         Categoria_Menu_View_Textual catMenu = new Categoria_Menu_View_Textual(model, scanner);
-        Categoria_if categoriaEscolhida = catMenu.escolherCategoriaNavegacao(model.getCategoriaRaiz());
+        Categoria_if categoriaEscolhida = catMenu.escolherCategoriaNavegacao(model.getCategoriaRaiz(), "Deixar sem categoria");
 
         Produto novoProduto = new Produto(nome, descricao, preco);
-        novoProduto.setNota(nota);
         novoProduto.setVendedor(cliente);
         Produtos_Menu_View_Textual.coletarFotos(scanner, novoProduto);
 
@@ -184,10 +179,9 @@ public class Estoque_Menu_View_Textual {
         System.out.println("1. Nome");
         System.out.println("2. Descrição");
         System.out.println("3. Preço");
-        System.out.println("4. Nota");
-        System.out.println("5. Categoria");
-        System.out.println("6. Adicionar Quantidade ao Estoque");
-        System.out.println("7. Gerenciar Fotos");
+        System.out.println("4. Categoria");
+        System.out.println("5. Adicionar Quantidade ao Estoque");
+        System.out.println("6. Gerenciar Fotos");
         System.out.println("0. Cancelar");
         System.out.print("Escolha: ");
 
@@ -209,14 +203,9 @@ public class Estoque_Menu_View_Textual {
                 scanner.nextLine();
                 break;
             case 4:
-                System.out.print("Nova nota (0-5): ");
-                produto.setNota(scanner.nextDouble());
-                scanner.nextLine();
-                break;
-            case 5:
-                System.out.println("Escolha a nova categoria:");
+                System.out.println("Escolha a nova categoria (0 para deixar sem categoria):");
                 Categoria_Menu_View_Textual catMenu = new Categoria_Menu_View_Textual(model, scanner);
-                Categoria_if novaCategoria = catMenu.escolherCategoriaNavegacao(model.getCategoriaRaiz());
+                Categoria_if novaCategoria = catMenu.escolherCategoriaNavegacao(model.getCategoriaRaiz(), "Deixar sem categoria");
 
                 if (produto.getCategoria() != null) {
                     produto.getCategoria().removerProduto(produto);
@@ -228,7 +217,7 @@ public class Estoque_Menu_View_Textual {
                     produto.setCategoria(null);
                 }
                 break;
-            case 6:
+            case 5:
                 System.out.print("Quantidade a adicionar: ");
                 int qtd = scanner.nextInt();
                 scanner.nextLine();
@@ -239,9 +228,9 @@ public class Estoque_Menu_View_Textual {
                     return;
                 }
                 break;
-            case 7:
+            case 6:
                 Produtos_Menu_View_Textual.gerenciarFotosProduto(scanner, model, produto);
-                return; 
+                return;
             case 0:
                 System.out.println("Operação cancelada.");
                 return;

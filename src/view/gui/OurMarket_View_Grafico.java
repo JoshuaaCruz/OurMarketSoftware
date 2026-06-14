@@ -1,23 +1,17 @@
 package view.gui;
 
-import java.awt.Component;
 import java.util.HashMap;
-import java.util.List;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreePath;
 import model.Fabrica;
 import model.OurMarket;
-
 import model.categoria_produto.Categoria_if;
 import model.categoria_produto.Produto;
 import model.fabrica.Fabrica_Grafica;
 import view.Cliente_View;
-
 import view.OurMarket_View;
 
 public class OurMarket_View_Grafico extends javax.swing.JFrame implements OurMarket_View {

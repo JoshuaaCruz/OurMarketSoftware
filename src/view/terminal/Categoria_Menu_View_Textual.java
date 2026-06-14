@@ -1,8 +1,8 @@
 package view.terminal;
 
-import java.util.Scanner;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 import model.OurMarket;
 import model.categoria_produto.Categoria;
 import model.categoria_produto.Categoria_if;
@@ -160,8 +160,17 @@ public class Categoria_Menu_View_Textual implements Menu_if {
 
     /**
      * Helper universal para exibir categorias com números e retornar a escolhida.
+     * Usa "Cancelar / Voltar" como texto padrão para a opção [0].
      */
     public Categoria_if escolherCategoriaNavegacao(Categoria_if raiz) {
+        return escolherCategoriaNavegacao(raiz, "Cancelar / Voltar");
+    }
+
+    /**
+     * Helper universal para exibir categorias com números e retornar a escolhida.
+     * @param texto0 texto exibido para a opção [0] (ex: "Cancelar / Voltar" ou "Deixar sem categoria")
+     */
+    public Categoria_if escolherCategoriaNavegacao(Categoria_if raiz, String texto0) {
         List<Categoria_if> listaCategorias = new ArrayList<>();
         coletarTodasCategoriaseSubs(raiz, listaCategorias);
 
@@ -170,7 +179,7 @@ public class Categoria_Menu_View_Textual implements Menu_if {
             String destaque = c.isDestaqueAdmin() ? " [DESTAQUE]" : "";
             System.out.println("[" + (i + 1) + "] " + c.getNome() + destaque);
         }
-        System.out.println("[0] Cancelar / Voltar");
+        System.out.println("[0] " + texto0);
 
         while (true) {
             System.out.print("Escolha o número da categoria: ");

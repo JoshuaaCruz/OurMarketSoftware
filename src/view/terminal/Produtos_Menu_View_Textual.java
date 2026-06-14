@@ -246,7 +246,8 @@ public class Produtos_Menu_View_Textual implements Menu_if {
                     int num = scanner.nextInt();
                     scanner.nextLine();
                     if (num > 0 && num <= produto.getFotos().size()) {
-                        String removida = produto.getFotos().remove(num - 1);
+                        String removida = produto.getFotos().get(num - 1);
+                        produto.removeFoto(removida);
                         model.salvar();
                         System.out.println(" Foto removida: " + removida);
                     }

@@ -8,11 +8,11 @@ import model.Fabrica;
 import model.OurMarket;
 import model.cliente.Cliente_if;
 import view.Cliente_View;
-import view.OurMarket_View;
 import view.Menu_if;
+import view.OurMarket_View;
 import view.terminal.Categoria_Menu_View_Textual;
-import view.terminal.OurMarket_View_Textual;
 import view.terminal.MenuFormaPagamento_View_Textual;
+import view.terminal.OurMarket_View_Textual;
 import view.terminal.Produtos_Menu_View_Textual;
 
 public class Fabrica_Textual extends Fabrica {
@@ -35,7 +35,6 @@ public class Fabrica_Textual extends Fabrica {
                 return new Produtos_Menu_View_Textual(model);
             case "categorias":
                 return new Categoria_Menu_View_Textual(model);
-            case "forma_pagamento":
             case "forma pagamento":
                 if (model.getClienteLogado() == null || model.getClienteLogado().getContaCliente() == null) {
                     throw new IllegalStateException("Nenhum cliente com conta cadastrado.");
