@@ -11,7 +11,6 @@ public class Categoria implements Categoria_if{
     private final ArrayList<Categoria_if> subcategoriasList;
     private final ArrayList<Produto> produtos;
     
-    private boolean hasChildren; //se não, não permitir certos métodos, não sei se necessário
     private boolean destaqueAdmin = false;
     
     {
@@ -31,7 +30,6 @@ public class Categoria implements Categoria_if{
 
     @Override
     public void addSubCategoria(Categoria categoria) {
-        // TODO: deve verificar se a categoria jaa existe
         
         if(!this.subcategoriasList.contains(categoria)){
         subcategoriasList.add(categoria);

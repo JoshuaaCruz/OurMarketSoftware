@@ -117,12 +117,15 @@ public class OurMarket {
         // inicializa categorias
 
         Categoria catTech = new Categoria("Tecnologia");
+        catTech.setDescricao("Produtos tecnológicos para voce!");
         categoriaRaiz.addSubCategoria(catTech);
         
         Categoria catInformatica = new Categoria("Informatica");
+        catInformatica.setDescricao("Produtos informáticos!!!");
         catTech.addSubCategoria(catInformatica);
         
         Categoria catGames = new Categoria("Games");
+        catGames.setDescricao("Produtos para gamers!!");
         catTech.addSubCategoria(catGames);
         
         Categoria catCelulares = new Categoria("Celulares e Telefones");
@@ -357,6 +360,42 @@ public class OurMarket {
 
         salvar();
         return "Sucesso";
+    }
+
+    public List<Produto> buscarProdutosPorNome(String nome) {
+        List<Produto> resultados = new ArrayList<>();
+        if (nome == null || nome.trim().isEmpty()) {
+            return resultados;
+        }
+        String query = nome.toLowerCase();
+        for (Cliente c : clientes) {
+            if (c.getEstoque() != null) {
+                for (Produto p : c.getEstoque().getProdutos()) {
+                    if (p.getNome().toLowerCase().contains(query)) {
+                        resultados.add(p);
+                    }
+                }
+            }
+        }
+        return resultados;
+    }
+
+    public List<Categoria_if> buscarCategoriasPorNome(String nome) {
+        List<Categoria_if> resultados = new ArrayList<>();
+        if (nome == null || nome.trim().isEmpty()) {
+            return resultados;
+        }
+        buscarCategoriasRecursivo(categoriaRaiz, nome.toLowerCase(), resultados);
+        return resultados;
+    }
+
+    private void buscarCategoriasRecursivo(Categoria_if atual, String query, List<Categoria_if> resultados) {
+        if (atual.getNome().toLowerCase().contains(query)) {
+            resultados.add(atual);
+        }
+        for (Categoria_if sub : atual.getSubcategorias()) {
+            buscarCategoriasRecursivo(sub, query, resultados);
+        }
     }
 
     {

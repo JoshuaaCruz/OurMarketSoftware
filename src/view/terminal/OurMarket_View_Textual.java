@@ -59,6 +59,7 @@ public class OurMarket_View_Textual implements OurMarket_View {
             System.out.println("11. Gerenciar Categorias");
             System.out.println("12. Gerenciar Endereços");
             System.out.println("13. Ver Produtos em Destaque (Mais Vendidos)");
+            System.out.println("14. Buscar Produto / Categoria");
             System.out.println("0. Sair");
             System.out.print("Escolha uma operação: ");
 
@@ -104,6 +105,9 @@ public class OurMarket_View_Textual implements OurMarket_View {
                     break;
                 case 13:
                     verProdutosEmDestaque();
+                    break;
+                case 14:
+                    new Busca_View_Textual(model, scanner).iniciar();
                     break;
                 case 0:
                     System.out.println("\nEncerrando o sistema...");
