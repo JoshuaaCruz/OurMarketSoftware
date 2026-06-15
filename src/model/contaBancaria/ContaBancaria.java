@@ -86,7 +86,7 @@ public class ContaBancaria {
         return false;
     }
 
-    // retorna todas as formas de pagamento disponíveis
+    // retorna todas as formas de pagamento disponiveis
     public List<FormaDePagamento> getFormasPagamento() {
         return formasPagamento;
     }

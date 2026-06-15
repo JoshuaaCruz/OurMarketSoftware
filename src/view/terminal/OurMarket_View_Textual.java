@@ -118,10 +118,28 @@ public class OurMarket_View_Textual implements OurMarket_View {
     private void cadastrarClienteEConta() {
         System.out.println("\n--- 1. DADOS DO CLIENTE ---");
         Cliente cliente = new Cliente();
-        System.out.print("Nome completo: ");
-        cliente.setNome(scanner.nextLine());
-        System.out.print("CPF: ");
-        cliente.setCPF(scanner.nextLine());
+        String nome = "";
+        while (nome.isEmpty()) {
+            System.out.print("Nome completo: ");
+            nome = scanner.nextLine().trim();
+            if (nome.isEmpty()) {
+                System.out.println(" Nome não pode ser vazio. Tente novamente.");
+            }
+        }
+        cliente.setNome(nome);
+        
+        String cpf = "";
+        while (cpf.isEmpty()) {
+            System.out.print("CPF: ");
+            cpf = scanner.nextLine().trim();
+            if (cpf.isEmpty()) {
+                System.out.println(" CPF não pode ser vazio. Tente novamente.");
+            } else if (model.cpfExiste(cpf)) {
+                System.out.println(" Este CPF já está cadastrado. Tente outro.");
+                cpf = "";
+            }
+        }
+        cliente.setCPF(cpf);
 
         System.out.print("Data de nascimento (dia/mês/ano [dd/MM/yyyy], Enter para pular): ");
         String dataNasc = scanner.nextLine().trim();
@@ -134,10 +152,25 @@ public class OurMarket_View_Textual implements OurMarket_View {
         }
 
         System.out.println("\n--- 2. CREDENCIAIS DE ACESSO ---");
-        System.out.print("Login: ");
-        String login = scanner.nextLine();
-        System.out.print("Senha: ");
-        String senha = scanner.nextLine();
+        String login = "";
+        while (login.isEmpty()) {
+            System.out.print("Login: ");
+            login = scanner.nextLine().trim();
+            if (login.isEmpty()) {
+                System.out.println(" Login não pode ser vazio. Tente novamente.");
+            } else if (model.loginExiste(login)) {
+                System.out.println(" Este login já está em uso. Escolha outro.");
+                login = "";
+            }
+        }
+        String senha = "";
+        while (senha.isEmpty()) {
+            System.out.print("Senha: ");
+            senha = scanner.nextLine().trim();
+            if (senha.isEmpty()) {
+                System.out.println(" Senha não pode ser vazia. Tente novamente.");
+            }
+        }
         cliente.setLogin(login);
         cliente.setSenha(senha);
 

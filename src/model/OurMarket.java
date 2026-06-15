@@ -83,6 +83,23 @@ public class OurMarket {
         clienteLogado = null;
     }
 
+    public boolean loginExiste(String login) {
+        if (login == null) return false;
+        for (Cliente c : clientes) {
+            if (login.equals(c.getLogin())) 
+                return true;
+        }
+        return false;
+    }
+
+    public boolean cpfExiste(String cpf) {
+        if (cpf == null) return false;
+        for (Cliente c : clientes) {
+            if (cpf.equals(c.getCPF())) return true;
+        }
+        return false;
+    }
+
     public void inicializarDadosPadrao() {
         if (!clientes.isEmpty()) {
             return;

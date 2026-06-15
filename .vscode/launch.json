@@ -3,15 +3,20 @@
   "configurations": [
     {
       "type": "java",
-      "name": "Run src Main",
+      "name": "Run OurMarket (Terminal)",
       "request": "launch",
       "mainClass": "Main",
       "cwd": "${workspaceFolder}",
       "classPaths": [
         "${workspaceFolder}/out",
-        "${workspaceFolder}/src"
+        "${workspaceFolder}/src",
+        "${workspaceFolder}/src/db/sqlite-jdbc-3.36.0.3.jar"
       ],
-      "args": "--terminal"
+      "args": "--terminal",
+      "vmArgs": "-Dfile.encoding=UTF-8 --enable-native-access=ALL-UNNAMED",
+      "encoding": "UTF-8",
+      "console": "integratedTerminal",
+      "preLaunchTask": "Compile src"
     }
   ]
 }

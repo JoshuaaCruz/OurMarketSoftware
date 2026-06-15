@@ -10,7 +10,7 @@
         "-ExecutionPolicy",
         "Bypass",
         "-Command",
-        "New-Item -ItemType Directory -Force out | Out-Null; $files = Get-ChildItem -Recurse -Filter *.java src | ForEach-Object { $_.FullName }; javac -encoding UTF-8 -d out $files"
+        "New-Item -ItemType Directory -Force out | Out-Null; $files = Get-ChildItem -Recurse -Filter *.java src | ForEach-Object { $_.FullName }; javac -encoding UTF-8 -cp \"src\\db\\sqlite-jdbc-3.36.0.3.jar\" -d out $files"
       ],
       "group": {
         "kind": "build",
