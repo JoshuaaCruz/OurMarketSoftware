@@ -23,6 +23,7 @@ public class Cliente implements Cliente_if{
     private List<ItemProduto> pedidosComprados;
     private Set<String> cuponsUsados;
     private Set<String> produtosAvaliados;
+    private int totalProdutosAvaliados = 0;
 
     public Cliente() {
         this.estoque = new ColecaoProdutos();
@@ -126,15 +127,45 @@ public class Cliente implements Cliente_if{
     }
 
     public void calculaNotaColecao(ColecaoProdutos colecao) {
-        if (colecao == null || colecao.getProdutos().isEmpty()) {
+        Set<Produto> todosProdutos = new HashSet<>();
+        
+        //como nota do vendedor depende da nota de todos os produtos dele, somamos produtos ainda no estoque + totalmente vendidos
+        if (this.estoque != null) {
+            todosProdutos.addAll(this.estoque.getProdutos());
+        }
+        
+        if (this.produtosVendidos != null) {
+            for (ItemProduto item : this.produtosVendidos) {
+                if (item.getProduto() != null) {
+                    todosProdutos.add(item.getProduto());
+                }
+            }
+        }
+
+        double somaPonderada = 0;
+        int totalVotosVendedor = 0;
+        int qtdProdAvaliados = 0;
+
+        for (Produto produto : todosProdutos) {
+            int votos = produto.getTotalVotos();
+            if (votos > 0) {
+                somaPonderada += (produto.getNota() * votos);
+                totalVotosVendedor += votos;
+                qtdProdAvaliados++;
+            }
+        }
+
+        if (totalVotosVendedor == 0) {
             this.nota = 0;
-            return;
+            this.totalProdutosAvaliados = 0;
+        } else {
+            this.nota = somaPonderada / totalVotosVendedor;
+            this.totalProdutosAvaliados = qtdProdAvaliados;
         }
-        double somaNotas = 0;
-        for (model.categoria_produto.Produto produto : colecao.getProdutos()) {
-            somaNotas += produto.getNota();
-        }
-        this.nota = somaNotas / colecao.getProdutos().size();
+    }
+
+    public int getTotalProdutosAvaliados() {
+        return totalProdutosAvaliados;
     }
 
     public void addProdutoVendido(ItemProduto produto){

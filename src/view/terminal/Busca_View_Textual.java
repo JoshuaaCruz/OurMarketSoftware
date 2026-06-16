@@ -5,7 +5,6 @@ import java.util.Scanner;
 import model.OurMarket;
 import model.categoria_produto.Categoria_if;
 import model.categoria_produto.Produto;
-import model.cliente.Cliente;
 
 public class Busca_View_Textual {
 
@@ -91,7 +90,8 @@ public class Busca_View_Textual {
             System.out.println("Categoria: " + p.getCategoria().getNome());
         }
         System.out.println("Vendedor: " + p.getVendedor().getName());
-        System.out.println("Nota: " + String.format("%.1f", p.getNota()) + " (" + p.getTotalVotos() + " avaliações)");
+        System.out.println("Nota do Vendedor: " + String.format("%.1f", p.getVendedor().getNota()) + " (" + p.getVendedor().getTotalProdutosAvaliados() + " produtos avaliados)");
+        System.out.println("Nota do Produto: " + String.format("%.1f", p.getNota()) + " (" + p.getTotalVotos() + " avaliações)");
         System.out.println("Fotos: " + p.getFotos().size());
 
         int opcao = -1;
