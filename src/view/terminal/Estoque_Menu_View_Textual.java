@@ -77,15 +77,28 @@ public class Estoque_Menu_View_Textual {
     private void adicionarProdutoEstoque(ColecaoProdutos colecao, Cliente cliente) {
         System.out.println("\n--- ADICIONAR PRODUTO ---");
 
-        System.out.print("Nome do produto: ");
-        String nome = scanner.nextLine();
+        String nome = "";
+        while (nome.isEmpty()) {
+            System.out.print("Nome do produto: ");
+            nome = scanner.nextLine().trim();
+            if (nome.isEmpty()) System.out.println(" O nome não pode ser vazio.");
+        }
 
-        System.out.print("Descrição: ");
-        String descricao = scanner.nextLine();
+        String descricao = "";
+        while (descricao.isEmpty()) {
+            System.out.print("Descrição: ");
+            descricao = scanner.nextLine().trim();
+            if (descricao.isEmpty()) System.out.println(" A descrição não pode ser vazia.");
+        }
 
         System.out.print("Preço base: R$ ");
         double preco = scanner.nextDouble();
         scanner.nextLine();
+        
+        if (preco <= 0) {
+            System.out.println(" Preço inválido.");
+            return;
+        }
 
         System.out.print("Quantidade em estoque: ");
         int quantidade = scanner.nextInt();
@@ -190,17 +203,32 @@ public class Estoque_Menu_View_Textual {
 
         switch (opcao) {
             case 1:
-                System.out.print("Novo nome: ");
-                produto.setNome(scanner.nextLine());
+                String novoNome = "";
+                while (novoNome.isEmpty()) {
+                    System.out.print("Novo nome: ");
+                    novoNome = scanner.nextLine().trim();
+                    if (novoNome.isEmpty()) System.out.println(" O nome não pode ser vazio.");
+                }
+                produto.setNome(novoNome);
                 break;
             case 2:
-                System.out.print("Nova descrição: ");
-                produto.setDescricao(scanner.nextLine());
+                String novaDesc = "";
+                while (novaDesc.isEmpty()) {
+                    System.out.print("Nova descrição: ");
+                    novaDesc = scanner.nextLine().trim();
+                    if (novaDesc.isEmpty()) System.out.println(" A descrição não pode ser vazia.");
+                }
+                produto.setDescricao(novaDesc);
                 break;
             case 3:
                 System.out.print("Novo preço: R$ ");
-                produto.setPrecoBase(scanner.nextDouble());
+                double novoPreco = scanner.nextDouble();
                 scanner.nextLine();
+                if (novoPreco <= 0) {
+                    System.out.println(" Preço inválido.");
+                    return;
+                }
+                produto.setPrecoBase(novoPreco);
                 break;
             case 4:
                 System.out.println("Escolha a nova categoria (0 para deixar sem categoria):");

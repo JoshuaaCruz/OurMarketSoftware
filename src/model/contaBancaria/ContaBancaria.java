@@ -45,6 +45,9 @@ public class ContaBancaria {
      * @param limiteFatura the limiteFatura to set
      */
     public void setLimiteFatura(double limiteFatura) {
+        if (limiteFatura < 0) {
+            throw new IllegalArgumentException("O limite não pode ser negativo.");
+        }
         this.limiteFatura = limiteFatura;
     }
 
@@ -56,16 +59,20 @@ public class ContaBancaria {
         fatura += valor;
     }
 
-    public void pagarFatura(double valor) {
-        if (valor > 0 && fatura >= valor) {
+    public boolean pagarFatura(double valor) {
+        if (valor > 0 && fatura >= valor && saldoConta >= valor) {
             fatura -= valor;
+            return true;
         }
+        return false;
     }
 
-    public void depositar(double valor) {
+    public boolean depositar(double valor) {
         if (valor > 0) {
             saldoConta += valor;
+            return true;
         }
+        return false;
     }
 
     public boolean sacar(double valor) {

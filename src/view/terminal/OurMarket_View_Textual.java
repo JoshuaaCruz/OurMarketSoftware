@@ -120,6 +120,11 @@ public class OurMarket_View_Textual implements OurMarket_View {
     }
 
     private void cadastrarClienteEConta() {
+        if (model.getClienteLogado() != null) {
+            System.out.println("\n Você já está logado. Faça logoff antes de cadastrar uma nova conta.");
+            return;
+        }
+
         System.out.println("\n--- 1. DADOS DO CLIENTE ---");
         Cliente cliente = new Cliente();
         String nome = "";
@@ -186,9 +191,16 @@ public class OurMarket_View_Textual implements OurMarket_View {
         ContaBancaria conta = new ContaBancaria();
         System.out.print("Número da conta: ");
         conta.setNumero(scanner.nextLine());
-        System.out.print("Defina o limite inicial do cartão de crédito: R$ ");
-        conta.setLimiteFatura(scanner.nextDouble());
-        scanner.nextLine();
+        double limite = -1;
+        while (limite < 0) {
+            System.out.print("Defina o limite inicial do cartão de crédito: R$ ");
+            limite = scanner.nextDouble();
+            scanner.nextLine();
+            if (limite < 0) {
+                System.out.println(" O limite não pode ser negativo.");
+            }
+        }
+        conta.setLimiteFatura(limite);
         cliente.setContaCliente(conta);
 
         model.adicionarCliente(cliente);
@@ -242,9 +254,13 @@ public class OurMarket_View_Textual implements OurMarket_View {
         System.out.print("\nDigite o valor para depósito: R$ ");
         double valorDeposito = scanner.nextDouble();
         scanner.nextLine();
-        conta.depositar(valorDeposito);
-        model.salvar();
-        System.out.println("Depósito de R$ " + valorDeposito + " realizado com sucesso!");
+        
+        if (conta.depositar(valorDeposito)) {
+            model.salvar();
+            System.out.println("Depósito de R$ " + String.format("%.2f", valorDeposito) + " realizado com sucesso!");
+        } else {
+            System.out.println("Valor de depósito inválido.");
+        }
     }
 
     private void sacar() {
@@ -261,7 +277,7 @@ public class OurMarket_View_Textual implements OurMarket_View {
             model.salvar();
             System.out.println("Saque de R$ " + valorSaque + " realizado com sucesso!");
         } else {
-            System.out.println("Saldo insuficiente para realizar o saque.");
+            System.out.println("Erro no saque.Saldo insuficiente ou valor inválido.");
         }
     }
 
@@ -305,13 +321,11 @@ public class OurMarket_View_Textual implements OurMarket_View {
         double valor = scanner.nextDouble();
         scanner.nextLine();
 
-        double faturaAntes = conta.getFatura();
-        conta.pagarFatura(valor);
-        if (conta.getFatura() < faturaAntes) {
+        if (conta.pagarFatura(valor)) {
             model.salvar();
             System.out.printf("Pagamento de R$ %.2f realizado! Fatura restante: R$ %.2f%n", valor, conta.getFatura());
         } else {
-            System.out.println("Valor inválido ou maior que a fatura.");
+            System.out.println("Erro: Valor inválido, maior que a fatura ou saldo em conta insuficiente.");
         }
     }
 

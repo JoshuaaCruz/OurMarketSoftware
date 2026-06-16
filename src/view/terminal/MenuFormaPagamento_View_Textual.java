@@ -115,9 +115,15 @@ public class MenuFormaPagamento_View_Textual implements Menu_if {
         }
 
         if (forma instanceof CartaoCredito) {
-            System.out.print("Defina o limite do cartão: R$ ");
-            double limite = scanner.nextDouble();
-            scanner.nextLine();
+            double limite = -1;
+            while (limite < 0) {
+                System.out.print("Defina o limite do cartão: R$ ");
+                limite = scanner.nextDouble();
+                scanner.nextLine();
+                if (limite < 0) {
+                    System.out.println(" O limite não pode ser negativo.");
+                }
+            }
             conta.setLimiteFatura(limite);
         }
 
@@ -165,6 +171,11 @@ public class MenuFormaPagamento_View_Textual implements Menu_if {
         System.out.print("Novo limite: R$ ");
         double novoLimite = scanner.nextDouble();
         scanner.nextLine();
+
+        if (novoLimite < 0) {
+            System.out.println("Atenção: o limite não pode ser negativo. Operação cancelada.");
+            return;
+        }
 
         if (novoLimite < conta.getFatura()) {
             System.out.printf("Atenção: novo limite (R$ %.2f) é menor que a fatura atual (R$ %.2f). Operação cancelada.%n",
