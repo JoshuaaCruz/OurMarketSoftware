@@ -82,19 +82,6 @@ public class ColecaoProdutos {
         return produtosUnicos;
     }
 
-    //TODO: era necessario para Memento
-    /**
-        public ColecaoProdutos copiar() {
-        ColecaoProdutos novaColecao = new ColecaoProdutos();
-        for (ItemProduto p : this.produtos) {
-            // Se Produto for imutável, pode copiar a referência.
-            // Se Produto for mutável, você precisaria de um p.copiar() aqui também.
-            novaColecao.adicionarProduto(p,1); // Adiciona o produto à nova coleção
-        }
-        return novaColecao;
-    }
-    */
-
     @Override
     public String toString() {
         return "ColecaoProdutos{" +

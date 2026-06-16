@@ -2,8 +2,6 @@ package model.contaBancaria;
 
 public class Boleto implements FormaDePagamento {
 
-    private static final double TAXA = 3.50; // taxa fixa de processamento
-
     @Override
     public String getNome() {
         return "Boleto";
@@ -11,22 +9,21 @@ public class Boleto implements FormaDePagamento {
 
     @Override
     public String getDescricao(ContaBancaria conta) {
-        return String.format("Saldo: R$ %.2f | Taxa fixa: R$ %.2f", conta.getSaldoConta(), TAXA);
+        return String.format("Saldo: R$ %.2f", conta.getSaldoConta());
     }
 
     @Override
     public boolean pagar(ContaBancaria origem, ContaBancaria destino, double valor) {
         if (origem == null || destino == null || valor <= 0) return false;
-        double total = valor + TAXA;
+        double total = valor;
         if (!origem.sacar(total)) return false;
-        destino.depositar(valor); //TODO: taxa vai para conta mercado? 
+        destino.depositar(valor); 
         return true;
     }
 
     @Override
     public boolean podePagar(ContaBancaria origem, double valor) {
         if (origem == null || valor <= 0) return false;
-        double totalComTaxa = valor + TAXA;
-        return origem.getSaldoConta() >= totalComTaxa;
+        return origem.getSaldoConta() >= valor;
     }
 }

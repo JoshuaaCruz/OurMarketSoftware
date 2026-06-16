@@ -402,7 +402,7 @@ public class OurMarket_View_Textual implements OurMarket_View {
     private void verificarAniversario(Cliente cliente) {
         if (cliente.getDataNascimento() == null) return;
         if (MonthDay.from(cliente.getDataNascimento()).equals(MonthDay.now())) {
-            System.out.println("\n \u1F382 Feliz Aniversário, " + cliente.getName() + "! \u1F382"); //TODO: unicode aniversario não funcionando = caracteres especiais ç/ã
+            System.out.println("\n Feliz Aniversário, " + cliente.getName() + "!");
             System.out.println(" Como presente, use o cupom abaixo na sua próxima compra:");
             System.out.println(" Código: " + Cupom.ANIVERSARIO.getCodigo());
             System.out.println(" " + Cupom.ANIVERSARIO.getDescricao());

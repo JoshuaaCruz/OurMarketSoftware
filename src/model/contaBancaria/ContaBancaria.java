@@ -19,7 +19,6 @@ public class ContaBancaria {
     public ContaBancaria() {
         this.formasPagamento = new ArrayList<>();
         this.formasPagamento.add(new Pix());
-        this.formasPagamento.add(new CartaoCredito()); // TODO: Verificar se deveria ser adicionado automaticamente as formas de pgmento na inicializacao
     }
 
     public String getNumero(){

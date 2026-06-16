@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Scanner;
 import model.OurMarket;
 import model.categoria_produto.ColecaoProdutos;
-import model.categoria_produto.ItemProduto;
 import model.categoria_produto.Produto;
 import model.cliente.Cliente;
 import view.Menu_if;
