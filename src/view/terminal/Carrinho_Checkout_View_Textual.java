@@ -86,21 +86,12 @@ public class Carrinho_Checkout_View_Textual {
         int quantidade = scanner.nextInt();
         scanner.nextLine();
 
-        if (quantidade <= 0) {
-            System.out.println(" Quantidade inválida.");
-            return;
+        try {
+            model.adicionarProdutoAoCarrinho(produto, quantidade);
+            System.out.println("\n " + quantidade + "x '" + produto.getNome() + "' adicionado ao Carrinho com sucesso!");
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            System.out.println(" Erro: " + e.getMessage());
         }
-
-        // Facade: Delegate checking the available stock to the model.
-        int estoqueDisponivel = model.getEstoqueDisponivel(produto);
-        if (quantidade > estoqueDisponivel) {
-            System.out.println(" Erro: O vendedor só possui " + estoqueDisponivel + " unidades em estoque.");
-            return;
-        }
-
-        carrinho.adicionarProduto(produto, quantidade);
-        model.salvar();
-        System.out.println("\n " + quantidade + "x '" + produto.getNome() + "' adicionado ao Carrinho com sucesso!");
     }
 
     private void verProdutos(ColecaoProdutos colecao) {

@@ -380,6 +380,40 @@ public class OurMarket {
         return resultados;
     }
 
+    public void adicionarProdutoAoCarrinho(Produto produto, int qtd) {
+        Cliente logado = getClienteLogado();
+        if (logado == null) {
+            throw new IllegalStateException("Você precisa estar logado para adicionar ao carrinho.");
+        }
+        if (qtd <= 0) {
+            throw new IllegalArgumentException("Quantidade inválida.");
+        }
+        if (produto.getVendedor() != null && produto.getVendedor().equals(logado)) {
+            throw new IllegalArgumentException("Você não pode comprar seu próprio produto.");
+        }
+        int estoqueDisponivel = getEstoqueDisponivel(produto);
+        if (qtd > estoqueDisponivel) {
+            throw new IllegalArgumentException("O vendedor só possui " + estoqueDisponivel + " unidades em estoque.");
+        }
+        logado.getCarrinho().adicionarProduto(produto, qtd);
+        salvar();
+    }
+
+    public void adicionarProdutoAListaDesejos(Produto produto) {
+        Cliente logado = getClienteLogado();
+        if (logado == null) {
+            throw new IllegalStateException("Você precisa estar logado para adicionar à lista de desejos.");
+        }
+        if (produto.getVendedor() != null && produto.getVendedor().equals(logado)) {
+            throw new IllegalArgumentException("Você não pode adicionar seu próprio produto à lista de desejos.");
+        }
+        if (logado.getListaDesejos().contains(produto)) {
+            throw new IllegalArgumentException("O produto '" + produto.getNome() + "' já está na sua lista de desejos.");
+        }
+        logado.addProdutoListaDesejo(produto);
+        salvar();
+    }
+
     public List<Categoria_if> buscarCategoriasPorNome(String nome) {
         List<Categoria_if> resultados = new ArrayList<>();
         if (nome == null || nome.trim().isEmpty()) {

@@ -125,42 +125,25 @@ public class Busca_View_Textual {
     }
 
     private void adicionarAoCarrinho(Produto p) {
-        Cliente logado = model.getClienteLogado();
-        if (logado == null) {
-            System.out.println(" Você precisa estar logado para adicionar ao carrinho.");
-            return;
-        }
-
         System.out.print("Quantidade: ");
         int qtd = scanner.nextInt();
         scanner.nextLine();
 
-        if (qtd <= 0) {
-            System.out.println(" Quantidade inválida.");
-            return;
+        try {
+            model.adicionarProdutoAoCarrinho(p, qtd);
+            System.out.println(" " + qtd + "x '" + p.getNome() + "' adicionado ao Carrinho com sucesso!");
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            System.out.println(" Erro: " + e.getMessage());
         }
-
-        int estoqueDisponivel = model.getEstoqueDisponivel(p);
-        if (qtd > estoqueDisponivel) {
-            System.out.println(" Erro: O vendedor só possui " + estoqueDisponivel + " unidades em estoque.");
-            return;
-        }
-
-        logado.getCarrinho().adicionarProduto(p, qtd);
-        model.salvar();
-        System.out.println(" " + qtd + "x '" + p.getNome() + "' adicionado ao Carrinho com sucesso!");
     }
 
     private void adicionarAListaDesejos(Produto p) {
-        Cliente logado = model.getClienteLogado();
-        if (logado == null) {
-            System.out.println(" Você precisa estar logado para adicionar à lista de desejos.");
-            return;
+        try {
+            model.adicionarProdutoAListaDesejos(p);
+            System.out.println(" '" + p.getNome() + "' adicionado à Lista de Desejos com sucesso!");
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            System.out.println(" Erro: " + e.getMessage());
         }
-
-        logado.addProdutoListaDesejo(p);
-        model.salvar();
-        System.out.println(" '" + p.getNome() + "' adicionado à Lista de Desejos com sucesso!");
     }
 
     private void buscarCategoria() {

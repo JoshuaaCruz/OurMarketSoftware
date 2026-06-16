@@ -98,12 +98,11 @@ public class ListaDesejos_View_Textual {
         Produto produto = Produtos_Menu_View_Textual.escolherProdutoDeVendedor(model, scanner, cliente);
         if (produto == null) return;
 
-        if (cliente.getListaDesejos().contains(produto)) {
-            System.out.println(" O produto '" + produto.getNome() + "' já está na sua lista de desejos.");
-        } else {
-            cliente.addProdutoListaDesejo(produto);
-            model.salvar();
+        try {
+            model.adicionarProdutoAListaDesejos(produto);
             System.out.println("\n Produto '" + produto.getNome() + "' adicionado à Lista de Desejos com sucesso!");
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            System.out.println(" Erro: " + e.getMessage());
         }
     }
 
