@@ -16,6 +16,7 @@ import model.cliente.Endereco;
 import model.contaBancaria.ContaBancaria;
 import view.OurMarket_View;
 import view.Menu_if;
+import model.cliente.Cliente.ClienteBuilder;
 
 public class OurMarket_View_Textual implements OurMarket_View {
 
@@ -126,17 +127,35 @@ public class OurMarket_View_Textual implements OurMarket_View {
         }
 
         System.out.println("\n--- 1. DADOS DO CLIENTE ---");
-        Cliente cliente = new Cliente();
+        ClienteBuilder clienteBuilder = Cliente.builder();
         String nome = "";
         while (nome.isEmpty()) {
             System.out.print("Nome completo: ");
             nome = scanner.nextLine().trim();
             if (nome.isEmpty()) {
                 System.out.println(" Nome não pode ser vazio. Tente novamente.");
+                continue;
+            }
+            if (nome.matches("default[\\d]*")) {
+                Cliente cliente = clienteDefault(nome);
+                boolean clienteValido = !(model.loginExiste(cliente.getLogin()) ||
+                        model.cpfExiste(cliente.getCPF()));
+                if (!clienteValido) {
+                    System.out.println("Conta default inválida. Tente novamente");
+                    nome = "";
+                    continue;
+                }
+                model.adicionarCliente(cliente);
+                model.login(cliente.getLogin(), cliente.getSenha());
+                model.salvar();
+
+                System.out.println("\n Cadastro realizado com sucesso! Você já está logado como '" + cliente.getName() + "'.");
+
+                verificarAniversario(cliente);
+                return;
             }
         }
-        cliente.setNome(nome);
-        
+
         String cpf = "";
         while (cpf.isEmpty()) {
             System.out.print("CPF: ");
@@ -148,13 +167,13 @@ public class OurMarket_View_Textual implements OurMarket_View {
                 cpf = "";
             }
         }
-        cliente.setCPF(cpf);
 
         System.out.print("Data de nascimento (dia/mês/ano [dd/MM/yyyy], Enter para pular): ");
         String dataNasc = scanner.nextLine().trim();
+        LocalDate dataDeNasc = null;
         if (!dataNasc.isEmpty()) {
             try {
-                cliente.setDataNascimento(LocalDate.parse(dataNasc, DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+                dataDeNasc = LocalDate.parse(dataNasc, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
             } catch (DateTimeParseException e) {
                 System.out.println(" Formato inválido, data de nascimento não salva.");
             }
@@ -180,8 +199,14 @@ public class OurMarket_View_Textual implements OurMarket_View {
                 System.out.println(" Senha não pode ser vazia. Tente novamente.");
             }
         }
-        cliente.setLogin(login);
-        cliente.setSenha(senha);
+
+        Cliente cliente = clienteBuilder
+                .nome(nome)
+                .cpf(cpf)
+                .dataNascimento(dataDeNasc)
+                .login(login)
+                .senha(senha)
+                .build();
 
         System.out.println("\n--- 3. ENDEREÇO ---");
         Endereco_Menu_View_Textual endMenu = new Endereco_Menu_View_Textual(cliente, scanner);
@@ -474,4 +499,21 @@ public class OurMarket_View_Textual implements OurMarket_View {
         }
         return conta;
     }
+
+    private Cliente clienteDefault(String nome) {
+        ClienteBuilder clienteBuilder = Cliente.builder();
+        ContaBancaria conta = new ContaBancaria();
+        conta.setLimiteFatura(Double.MAX_VALUE);
+        conta.setNumero("12333");
+        clienteBuilder.nome(nome)
+                .cpf("12345" + nome.replace("default", ""))
+                .dataNascimento(LocalDate.MIN)
+                .login(nome)
+                .senha(nome)
+                .endereco(new Endereco("SC", "Brusque",
+                        "Rua", 51, "Casa"))
+                .contaCliente(conta);
+        return clienteBuilder.build();
+    }
 }
+

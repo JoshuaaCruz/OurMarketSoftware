@@ -252,4 +252,79 @@ public class Cliente implements Cliente_if{
     public Set<String> getProdutosAvaliados() {
         return produtosAvaliados;
     }
+
+    @Override
+    public String toString() {
+        return "Cliente{" +
+                "nome='" + nome + '\'' +
+                ", CPF='" + CPF + '\'' +
+                ", login='" + login + '\'' +
+                ", senha='" + senha + '\'' +
+                ", dataNascimento=" + dataNascimento +
+                '}';
+    }
+
+    public static ClienteBuilder builder() {
+        return new ClienteBuilder();
+    }
+
+    public static final class ClienteBuilder {
+        private String nome, CPF, login, senha;
+        private LocalDate dataNascimento;
+        private List<Endereco> enderecos;
+        private ContaBancaria contaCliente;
+
+        public ClienteBuilder() {
+            this.enderecos = new ArrayList<>();
+        }
+
+        public ClienteBuilder nome(String nome) {
+            this.nome = nome;
+            return this;
+        }
+
+        public ClienteBuilder cpf(String CPF) {
+            this.CPF = CPF;
+            return this;
+        }
+
+        public ClienteBuilder login(String login) {
+            this.login = login;
+            return this;
+        }
+
+        public ClienteBuilder senha(String senha) {
+            this.senha = senha;
+            return this;
+        }
+
+        public ClienteBuilder dataNascimento(LocalDate dataNascimento) {
+            this.dataNascimento = dataNascimento;
+            return this;
+        }
+
+        public ClienteBuilder contaCliente(ContaBancaria conta) {
+            this.contaCliente = conta;
+            return this;
+        }
+
+        public ClienteBuilder endereco(Endereco endereco) {
+            this.enderecos.add(endereco);
+            return this;
+        }
+
+        public ClienteBuilder enderecos(List<Endereco> enderecos) {
+            this.enderecos.addAll(enderecos);
+            return this;
+        }
+        public Cliente build() {
+            Cliente cliente = new Cliente();
+            cliente.setNome(this.nome);
+            cliente.setCPF(this.CPF);
+            cliente.setLogin(this.login);
+            cliente.setSenha(this.senha);
+            cliente.setDataNascimento(this.dataNascimento);
+            cliente.setContaCliente(contaCliente);            return cliente;
+        }
+    }
 }

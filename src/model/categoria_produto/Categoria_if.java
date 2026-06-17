@@ -7,6 +7,7 @@ import java.util.List;
 public interface Categoria_if {
     public void addSubCategoria(Categoria categoria);
     List<Categoria_if> getSubcategorias();
+
     String getNome();
     void setNome(String nome);
     String getDescricao();

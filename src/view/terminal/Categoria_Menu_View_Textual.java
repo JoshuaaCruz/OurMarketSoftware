@@ -125,14 +125,17 @@ public class Categoria_Menu_View_Textual implements Menu_if {
             return;
         }
         
+//        não é mais necessário que o alvo seja filho do pai
+//        if (!pai.getSubcategorias().contains(alvo)) {
+//             System.out.println(" A categoria selecionada não é uma subcategoria direta de '" + pai.getNome() + "'.");
+//             return;
+//        }
 
-        //Making sure alvo é filho de pai
-        if (!pai.getSubcategorias().contains(alvo)) {
-             System.out.println(" A categoria selecionada não é uma subcategoria direta de '" + pai.getNome() + "'.");
-             return;
+        boolean isRemoved = ((Categoria) pai).removerSubcategoria((Categoria) alvo);
+        if (!isRemoved) {
+            System.out.println(" A categoria não foi localizada! Tente novamente.");
+            return;
         }
-
-        ((Categoria) pai).removerSubcategoria((Categoria) alvo);
         model.salvar();
         System.out.println(" Subcategoria '" + alvo.getNome() + "' removida com sucesso!");
     }
